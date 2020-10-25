@@ -1,0 +1,195 @@
+package ua.itea.model;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.function.Predicate;
+
+import ua.itea.model.util.CardinalPoints;
+import ua.itea.model.util.MutablePosition;
+import ua.itea.model.util.Position;
+import ua.itea.model.util.Size;
+
+public class PathFinder {
+	private DisplacementField field;
+	private ArrayList<Position> newFront;
+	private ArrayList<Position> front;
+	private ArrayList<Position> satisfied;
+	private Neighbours neighbours;
+	private ArrayList<CardinalPoints> path;
+	private Predicate<Position> movementAllowed;
+	private Predicate<Position> isDestination;
+	private Predicate<Position[]> chooseDestination;
+	
+	public PathFinder(Size size) {
+		field = new DisplacementField(size);
+		front = new ArrayList<>();
+		newFront = new ArrayList<>();
+		
+		satisfied = new ArrayList<>();
+		neighbours = new Neighbours();
+		path = new ArrayList<>();
+	}
+	
+	public void setMovementAllowedPredicate(Predicate<Position> movementAllowed) {
+		this.movementAllowed = movementAllowed;
+	}
+	
+	public void setIsDestinationPredicate(Predicate<Position> isDestination) {
+		this.isDestination = isDestination;
+	}
+	
+	public ArrayList<CardinalPoints> find(Position start, int maxPathLengh) {
+		LocalTime begin = LocalTime.now();
+		
+		field.refresh();
+		front.clear();
+		satisfied.clear();
+		
+		front.add(start);
+		field.visit(start);
+		field.get(start).setDirection(CardinalPoints.NORTH);
+		
+		do {
+			
+			for (Position position : front) {
+				neighbours.setPosition(position);
+				
+				for (CardinalPoints direction : getCardinalPoints()) {
+					Position neighbour = neighbours.getNeighbour(direction);
+					
+					if (field.isWithin(neighbour)
+							&& !field.isVisited(neighbour) && movementAllowed.test(neighbour)) {
+						DisplacementCell displacementCell = field.get(neighbour);
+						Position cellPos = displacementCell.getPosition();
+						
+						displacementCell.setDirection(direction.oposite());
+						field.visit(cellPos);
+						
+						newFront.add(cellPos);
+					}
+				}
+			}
+			
+			for (Position position : newFront) {
+				if (isDestination.test(position)) {
+					satisfied.add(field.get(position).getPosition());
+				}
+			}
+
+			ArrayList<Position> tmp = front;
+			front = newFront;
+			newFront = tmp;
+			
+			newFront.clear();
+			
+		} while(satisfied.isEmpty() && !front.isEmpty());
+		
+		path.clear();
+		if (!satisfied.isEmpty()) {
+			updatePath(start, maxPathLengh);
+		}
+		
+		System.out.println(begin);
+		System.out.println(LocalTime.now());
+		return path;
+	}
+	
+	private void updatePath(Position start, int pathLength) {
+		
+		// TODO сделать специальный функциональный класс для выбора цели
+		Position s = satisfied.get((int)(Math.random() * satisfied.size()));
+		MutablePosition position = new MutablePosition(s.getX(), s.getY());
+		
+		CardinalPoints direction = field.get(position).getDirection();
+		CardinalPoints oposite;
+		
+		while (!position.equalTo(start)) {
+//			System.out.println(start + " | " + position);
+//			try {
+//				Thread.sleep(200);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			oposite = direction.oposite();
+			
+			position.move(direction);
+			direction = field.get(position).getDirection();
+			
+			field.get(position).setDirection(oposite);
+		}
+		
+		CardinalPoints dir;
+		while(!position.equalTo(s)) {
+//			System.out.println(s + " | " + position);
+//			try {
+//				Thread.sleep(200);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			dir = field.get(position).getDirection();
+			
+			path.add(dir);
+			position.move(dir);
+		}
+	}
+
+	private CardinalPoints[] getCardinalPoints() {
+		CardinalPoints[][] arr = {
+				{ CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.SOUTH, CardinalPoints.WEST },
+				{ CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.WEST,  CardinalPoints.SOUTH },
+				{ CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.WEST },
+				{ CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.EAST },
+				{ CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.SOUTH, CardinalPoints.EAST },
+				{ CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.EAST,  CardinalPoints.SOUTH },
+				
+				{ CardinalPoints.EAST, CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.WEST },
+				{ CardinalPoints.EAST, CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.SOUTH },
+				{ CardinalPoints.EAST, CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.WEST },
+				{ CardinalPoints.EAST, CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.NORTH },
+				{ CardinalPoints.EAST, CardinalPoints.WEST,  CardinalPoints.NORTH, CardinalPoints.SOUTH },
+				{ CardinalPoints.EAST, CardinalPoints.WEST,  CardinalPoints.SOUTH, CardinalPoints.NORTH },
+				
+				{ CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.EAST },
+				{ CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.WEST },
+				{ CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.NORTH, CardinalPoints.WEST },
+				{ CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.WEST,  CardinalPoints.NORTH },
+				{ CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.NORTH, CardinalPoints.EAST },
+				{ CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.EAST,  CardinalPoints.NORTH },
+				
+				{ CardinalPoints.WEST, CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.SOUTH },
+				{ CardinalPoints.WEST, CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.EAST },
+				{ CardinalPoints.WEST, CardinalPoints.EAST,  CardinalPoints.NORTH, CardinalPoints.SOUTH },
+				{ CardinalPoints.WEST, CardinalPoints.EAST,  CardinalPoints.SOUTH, CardinalPoints.NORTH },
+				{ CardinalPoints.WEST, CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.EAST },
+				{ CardinalPoints.WEST, CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.NORTH },
+		};
+		
+		return arr[(int) (Math.random() * arr.length)];
+		
+		/* second */
+//		ArrayList<CardinalPoints> source = new ArrayList<>();
+//		CardinalPoints[] arr = new CardinalPoints[4];
+//		
+//		for (CardinalPoints cardinalPoints : CardinalPoints.values()) {
+//			source.add(cardinalPoints);
+//		}
+//		
+//		int destIndex = 0;
+//		while(!source.isEmpty()) {
+//			int sourceIndex = (int) (Math.random() * source.size());
+//			
+//			arr[destIndex++] = source.get(sourceIndex);
+//			source.remove(sourceIndex);
+//		}
+//		
+//		return arr;
+		
+		/* third (default) */
+//		return CardinalPoints.values();
+	}
+
+}
