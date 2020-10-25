@@ -8,9 +8,10 @@ public class DisplacementCell {
 	private CardinalPoints direction;
 	private long visitId;
 	
-	public DisplacementCell(int x, int y, long visitId) {
-		position = new Position(x, y);
+	public DisplacementCell(Position position, long visitId) {
+		this.position = position;
 		this.visitId = visitId;
+		this.direction = CardinalPoints.NORTH;
 	}
 	
 	public CardinalPoints getDirection() {

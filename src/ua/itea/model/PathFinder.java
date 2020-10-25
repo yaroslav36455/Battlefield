@@ -2,6 +2,7 @@ package ua.itea.model;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import ua.itea.model.util.CardinalPoints;
@@ -11,80 +12,53 @@ import ua.itea.model.util.Size;
 
 public class PathFinder {
 	private DisplacementField field;
-	private ArrayList<Position> newFront;
-	private ArrayList<Position> front;
+	private Front front;
 	private ArrayList<Position> satisfied;
-	private Neighbours neighbours;
 	private ArrayList<CardinalPoints> path;
-	private Predicate<Position> movementAllowed;
 	private Predicate<Position> isDestination;
-	private Predicate<Position[]> chooseDestination;
+	private Function<Position[], Integer> chooseDestination;
 	
 	public PathFinder(Size size) {
 		field = new DisplacementField(size);
-		front = new ArrayList<>();
-		newFront = new ArrayList<>();
+		front = new Front();
 		
 		satisfied = new ArrayList<>();
-		neighbours = new Neighbours();
 		path = new ArrayList<>();
 	}
 	
 	public void setMovementAllowedPredicate(Predicate<Position> movementAllowed) {
-		this.movementAllowed = movementAllowed;
+		field.setMovementAllowedPredicate(movementAllowed);
 	}
 	
 	public void setIsDestinationPredicate(Predicate<Position> isDestination) {
 		this.isDestination = isDestination;
 	}
 	
+	public void setChooseDestinationFunction(Function<Position[], Integer> chooseDestination) {
+		this.chooseDestination = chooseDestination;
+	}
+	
 	public ArrayList<CardinalPoints> find(Position start, int maxPathLengh) {
 		LocalTime begin = LocalTime.now();
 		
-		field.refresh();
-		front.clear();
+		path.clear();
 		satisfied.clear();
 		
-		front.add(start);
-		field.visit(start);
-		field.get(start).setDirection(CardinalPoints.NORTH);
+		field.refresh();
+		front.refresh(start);
 		
 		do {
+			front.expand();
 			
-			for (Position position : front) {
-				neighbours.setPosition(position);
-				
-				for (CardinalPoints direction : getCardinalPoints()) {
-					Position neighbour = neighbours.getNeighbour(direction);
-					
-					if (field.isWithin(neighbour)
-							&& !field.isVisited(neighbour) && movementAllowed.test(neighbour)) {
-						DisplacementCell displacementCell = field.get(neighbour);
-						Position cellPos = displacementCell.getPosition();
-						
-						displacementCell.setDirection(direction.oposite());
-						field.visit(cellPos);
-						
-						newFront.add(cellPos);
-					}
-				}
-			}
-			
-			for (Position position : newFront) {
+			for (Position position : front.getArray()) {
 				if (isDestination.test(position)) {
 					satisfied.add(field.get(position).getPosition());
 				}
 			}
-
-			ArrayList<Position> tmp = front;
-			front = newFront;
-			newFront = tmp;
 			
-			newFront.clear();
-			
-		} while(satisfied.isEmpty() && !front.isEmpty());
+		} while(satisfied.isEmpty() && front.isExists());
 		
-		path.clear();
+		
 		if (!satisfied.isEmpty()) {
 			updatePath(start, maxPathLengh);
 		}
@@ -192,4 +166,57 @@ public class PathFinder {
 //		return CardinalPoints.values();
 	}
 
+	private class Front {
+		private Neighbours neighbours;
+		private ArrayList<Position> front;
+		private ArrayList<Position> newFront;
+		
+		public Front() {
+			neighbours = new Neighbours();
+			front = new ArrayList<>();
+			newFront = new ArrayList<>();
+		}
+		
+		public void refresh(Position start) {
+			front.clear();
+			
+			front.add(start);
+			field.visit(start);
+		}
+		
+		public void expand() {
+			
+			for (Position position : front) {
+				neighbours.setPosition(position);
+				
+				for (CardinalPoints direction : getCardinalPoints()) {
+					Position neighbour = neighbours.getNeighbour(direction);
+					
+					if (field.isMovementAllowed(neighbour)) {
+						DisplacementCell displacementCell = field.get(neighbour);
+						Position cellPos = displacementCell.getPosition();
+						
+						displacementCell.setDirection(direction.oposite());
+						field.visit(cellPos);
+						
+						newFront.add(cellPos);
+					}
+				}
+			}
+			
+			ArrayList<Position> tmp = front;
+			front = newFront;
+			newFront = tmp;
+			
+			newFront.clear();
+		}
+		
+		public ArrayList<Position> getArray() {
+			return front;
+		}
+		
+		public boolean isExists() {
+			return !front.isEmpty();
+		}
+	}
 }

@@ -2,7 +2,7 @@ package ua.itea.model;
 
 import ua.itea.model.environment.Environment;
 
-public class Cell implements Cloneable {
+public class Cell {
 	private Unit unit;
 	private Environment env;
 	
