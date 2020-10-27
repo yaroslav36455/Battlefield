@@ -1,6 +1,5 @@
 package ua.itea.view.swing;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,6 +15,9 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
+
+import ua.itea.model.Color;
+import ua.itea.model.util.Position;
 
 public class OpenGLPanel extends GLJPanel {
 	
@@ -98,16 +100,18 @@ public class OpenGLPanel extends GLJPanel {
 				for (MonochromePixels monochromePixels : pixelArray) {
 					Color color = monochromePixels.getColor();
 					
-					gl2.glColor3f(color.getRed() / 255.f,
-								  color.getGreen() / 255.f,
-								  color.getBlue() / 255.f);
-					for (Point point : monochromePixels) {
-						gl2.glVertex2f(point.x, point.y);
+					gl2.glColor3f(color.red(), color.green(), color.blue());
+					for (Position pos : monochromePixels) {
+						gl2.glVertex2f(pos.getX() + 1, pos.getY() + 1);
 					}
 				}
+				
+				gl2.glColor3f(0, 0.5f, 0.5f);
+				gl2.glVertex2f(1, 1);
 				gl2.glEnd();
 				
 				System.out.println("end");
+				System.out.println(pixelArray);
 			}
 		});
 	}

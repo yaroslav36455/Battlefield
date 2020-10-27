@@ -5,11 +5,12 @@ import java.util.ArrayList;
 public class State {
 	private Field<Cell> field;
 	private ArrayList<Team> teams;
+	private ArrayList<Placement<Unit>> units;
 	private boolean hasBeenUpdated;
 	
-	public State(Field<Cell> field, ArrayList<Team> teams) {
+	public State(Field<Cell> field, ArrayList<Placement<Unit>> units) {
 		this.field = field;
-		this.teams = teams;
+		this.units = units;
 	}
 	
 	public boolean hasBeenUpdated() {
@@ -28,6 +29,14 @@ public class State {
 	
 	public Field<Cell> getField() {
 		return field;
+	}
+	
+	public ArrayList<Placement<Unit>> getUnits() {
+		return units;
+	}
+	
+	public void setUnits(ArrayList<Placement<Unit>> units) {
+		this.units = units;
 	}
 	
 //	public static State load() {

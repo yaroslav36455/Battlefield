@@ -1,10 +1,12 @@
 package ua.itea.view.swing;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 
-public class MonochromePixels extends ArrayList<Point> {
+import ua.itea.model.Color;
+import ua.itea.model.util.Position;
+
+public class MonochromePixels extends ArrayList<Position> {
 	private Color color;
 	
 	public MonochromePixels(Color color) {

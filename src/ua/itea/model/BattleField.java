@@ -13,7 +13,7 @@ public class BattleField extends Field<Cell> {
 		Cell[][] field = new Cell[size.getWidth()][size.getHeight()];
 		
 		for (int r = 0; r < field.length; r++) {
-			for (int c = 0; c < field[c].length; c++) {
+			for (int c = 0; c < field[r].length; c++) {
 				field[r][c] = new Cell(null);
 			}
 		}

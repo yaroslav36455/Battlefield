@@ -63,8 +63,7 @@ public class PathFinder {
 			updatePath(start, maxPathLengh);
 		}
 		
-		System.out.println(begin);
-		System.out.println(LocalTime.now());
+		System.out.println(begin + " - " + LocalTime.now());
 		return path;
 	}
 	
@@ -95,7 +94,7 @@ public class PathFinder {
 		}
 		
 		CardinalPoints dir;
-		while(!position.equalTo(s)) {
+		for(int i = 0; i < pathLength && !position.equalTo(s); i++) {
 //			System.out.println(s + " | " + position);
 //			try {
 //				Thread.sleep(200);
@@ -112,37 +111,8 @@ public class PathFinder {
 	}
 
 	private CardinalPoints[] getCardinalPoints() {
-		CardinalPoints[][] arr = {
-				{ CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.SOUTH, CardinalPoints.WEST },
-				{ CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.WEST,  CardinalPoints.SOUTH },
-				{ CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.WEST },
-				{ CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.EAST },
-				{ CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.SOUTH, CardinalPoints.EAST },
-				{ CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.EAST,  CardinalPoints.SOUTH },
-				
-				{ CardinalPoints.EAST, CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.WEST },
-				{ CardinalPoints.EAST, CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.SOUTH },
-				{ CardinalPoints.EAST, CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.WEST },
-				{ CardinalPoints.EAST, CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.NORTH },
-				{ CardinalPoints.EAST, CardinalPoints.WEST,  CardinalPoints.NORTH, CardinalPoints.SOUTH },
-				{ CardinalPoints.EAST, CardinalPoints.WEST,  CardinalPoints.SOUTH, CardinalPoints.NORTH },
-				
-				{ CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.WEST,  CardinalPoints.EAST },
-				{ CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.WEST },
-				{ CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.NORTH, CardinalPoints.WEST },
-				{ CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.WEST,  CardinalPoints.NORTH },
-				{ CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.NORTH, CardinalPoints.EAST },
-				{ CardinalPoints.SOUTH, CardinalPoints.WEST,  CardinalPoints.EAST,  CardinalPoints.NORTH },
-				
-				{ CardinalPoints.WEST, CardinalPoints.NORTH, CardinalPoints.EAST,  CardinalPoints.SOUTH },
-				{ CardinalPoints.WEST, CardinalPoints.NORTH, CardinalPoints.SOUTH, CardinalPoints.EAST },
-				{ CardinalPoints.WEST, CardinalPoints.EAST,  CardinalPoints.NORTH, CardinalPoints.SOUTH },
-				{ CardinalPoints.WEST, CardinalPoints.EAST,  CardinalPoints.SOUTH, CardinalPoints.NORTH },
-				{ CardinalPoints.WEST, CardinalPoints.SOUTH, CardinalPoints.NORTH, CardinalPoints.EAST },
-				{ CardinalPoints.WEST, CardinalPoints.SOUTH, CardinalPoints.EAST,  CardinalPoints.NORTH },
-		};
-		
-		return arr[(int) (Math.random() * arr.length)];
+		/* first */
+		return CardinalPoints.randomArray();
 		
 		/* second */
 //		ArrayList<CardinalPoints> source = new ArrayList<>();
@@ -167,12 +137,12 @@ public class PathFinder {
 	}
 
 	private class Front {
-		private Neighbours neighbours;
+		private NearbyPositions neighbours;
 		private ArrayList<Position> front;
 		private ArrayList<Position> newFront;
 		
 		public Front() {
-			neighbours = new Neighbours();
+			neighbours = new NearbyPositions();
 			front = new ArrayList<>();
 			newFront = new ArrayList<>();
 		}
@@ -190,7 +160,7 @@ public class PathFinder {
 				neighbours.setPosition(position);
 				
 				for (CardinalPoints direction : getCardinalPoints()) {
-					Position neighbour = neighbours.getNeighbour(direction);
+					Position neighbour = neighbours.getPosition(direction);
 					
 					if (field.isMovementAllowed(neighbour)) {
 						DisplacementCell displacementCell = field.get(neighbour);

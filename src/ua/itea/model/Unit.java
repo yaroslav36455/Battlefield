@@ -1,39 +1,37 @@
 package ua.itea.model;
 
-import ua.itea.model.util.CardinalPoints;
-
-public class Unit implements Cloneable {
-	private DogTag dogTag;
-	private int health;
-	private CardinalPoints direction;
-
-	public Unit(DogTag dogTag, int health) {
-		this(dogTag, health, CardinalPoints.random());
-	}
+public class Unit {
+	private int id;
+	private Squad squad;
+	private float health;
 	
-	public Unit(DogTag dogTag, int health, CardinalPoints direction) {
-		this.dogTag = dogTag;
+	public Unit(Squad squad, float health) {
+		this.id = squad.generateId();
+		this.squad = squad;
 		this.health = health;
-		this.direction = direction;
 	}
 	
-	public DogTag getDogTag() {
-		return dogTag;
+	public int getId() {
+		return id;
 	}
 	
-	public int getHealth() {
+	public Squad getSquad() {
+		return squad;
+	}
+	
+	public void setSquad(Squad squad) {
+		this.squad = squad;
+	}
+	
+	public float getHealth() {
 		return health;
 	}
 
-	public void setHealth(int health) {
+	public void setHealth(float health) {
 		this.health = health;
 	}
-
-	public CardinalPoints getDirection() {
-		return direction;
-	}
-
-	public void setDirection(CardinalPoints direction) {
-		this.direction = direction;
+	
+	public Unit copy() {
+		return new Unit(squad, health);
 	}
 }

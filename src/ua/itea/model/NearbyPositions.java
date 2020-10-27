@@ -4,10 +4,10 @@ import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 
-public class Neighbours {
+public class NearbyPositions {
 	private MutablePosition[] neighbours;
 	
-	public Neighbours() {
+	public NearbyPositions() {
 		neighbours = new MutablePosition[CardinalPoints.values().length];
 		for (int i = 0; i < neighbours.length; i++) {
 			neighbours[i] = new MutablePosition();
@@ -15,7 +15,6 @@ public class Neighbours {
 	}
 	
 	public void setPosition(Position position) {
-		
 		neighbours[CardinalPoints.NORTH.ordinal()].setX(position.getX());
 		neighbours[CardinalPoints.NORTH.ordinal()].setY(position.getY() + 1);
 		
@@ -29,7 +28,7 @@ public class Neighbours {
 		neighbours[CardinalPoints.SOUTH.ordinal()].setY(position.getY() - 1);
 	}
 	
-	public Position getNeighbour(CardinalPoints direction) {
+	public Position getPosition(CardinalPoints direction) {
 		return neighbours[direction.ordinal()];
 	}
 }

@@ -3,10 +3,10 @@ package ua.itea.model;
 import ua.itea.model.environment.Environment;
 
 public class Cell {
-	private Unit unit;
+	private Placement<Unit> unit;
 	private Environment env;
 	
-	public Cell(Environment env, Unit unit) {
+	public Cell(Environment env, Placement<Unit> unit) {
 		this.env = env;
 		this.unit = unit;
 	}
@@ -15,15 +15,15 @@ public class Cell {
 		this.env = env;
 	}
 	
-	public boolean isFree() {
-		return unit == null;
+	public boolean hasUnit() {
+		return unit != null;
 	}
 	
-	public Unit getUnit() {
+	public Placement<Unit> getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Unit unit) {
+	public void setUnit(Placement<Unit> unit) {
 		this.unit = unit;
 	}
 

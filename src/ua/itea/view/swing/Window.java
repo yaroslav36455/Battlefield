@@ -1,7 +1,6 @@
 package ua.itea.view.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,6 +23,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
@@ -91,16 +93,24 @@ import com.sun.org.apache.xerces.internal.xinclude.XPointerSchema;
 
 import sun.swing.table.DefaultTableCellHeaderRenderer;
 import ua.itea.model.Engine;
-import ua.itea.model.Flag;
-import ua.itea.model.Neighbours;
+import ua.itea.model.Field;
+import ua.itea.model.BattleField;
+import ua.itea.model.Cell;
+import ua.itea.model.Color;
+import ua.itea.model.NearbyPositions;
 import ua.itea.model.PathFinder;
+import ua.itea.model.Placement;
+import ua.itea.model.Squad;
 import ua.itea.model.State;
+import ua.itea.model.Team;
+import ua.itea.model.Unit;
 import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
+	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
 //	
@@ -148,7 +158,7 @@ public class Window extends JFrame {
 		squadPanel = createSquadTablePanel();
 
 		leftSide = createLeftSide();
-		rightSide = createRightSide(300, 300);
+		rightSide = createRightSide();
 		leftSide.setBorder(new TitledBorder("Organization"));
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -281,9 +291,10 @@ public class Window extends JFrame {
 		
 		squadTablePanel.setLayout(new GridLayout());
 		
+		//initializeSimulation();
 		setKeyListeners();
 	}
-	
+
 	private void setKeyListeners() {
 		addKeyListener(new KeyListener() {
 			
@@ -300,6 +311,32 @@ public class Window extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					engine.iterate();
+					ArrayList<Placement<Unit>> units = state.getUnits();
+					
+					
+					Collections.sort(units, new Comparator<Placement<Unit>>() {
+
+						@Override
+						public int compare(Placement<Unit> o1, Placement<Unit> o2) {
+							int o1TeamId = o1.get().getSquad().getTeam().getId();
+							int o2TeamId = o2.get().getSquad().getTeam().getId();
+							int o1Id = o1.get().getId();
+							int o2Id = o2.get().getId();
+							
+							int teamCompare = Integer.compare(o1TeamId, o2TeamId);
+							
+							return teamCompare != 0 ? teamCompare : Integer.compare(o1Id, o2Id);
+						}
+					});
+					
+					for (Placement<Unit> placement : units) {
+						System.out.println("id: " + placement.get().getSquad().getTeam().getId() + "|"
+								+ "id: " + placement.get().getId() + "; "
+								+ placement.getPosition() + " health: " + placement.get().getHealth());
+					}
+					
+					updatePixelArray(units);
 					glPanel.display();
 				}
 			}
@@ -430,104 +467,164 @@ public class Window extends JFrame {
 		return panel;
 	}
 	
-	private JComponent createRightSide(int width, int height) {
+//	private JComponent createRightSide(int width, int height) {
+//		GLProfile glProfile = GLProfile.getDefault();
+//		GLCapabilities capabilities = new GLCapabilities(glProfile);
+//		ArrayList<MonochromePixels> pixelArray = new ArrayList<>();
+//
+//		Position positionA = new Position(31, 289);
+//		Position positionB = new Position(250, 23);
+//		Position[] blocks = new Position[width];
+//		int j = 0;
+//		for (int i = 0; i < blocks.length; i++) {
+//			blocks[i] = new Position(i, j++);
+//		}
+//		
+//		MonochromePixels pixels;
+//		
+//		pixels = new MonochromePixels(new Color(0.f, 0.9f, 0.f));
+//		pixels.add(positionA);
+//		pixelArray.add(pixels);
+//		
+//		pixels = new MonochromePixels(new Color(0.f, .5f, 1.f));
+//		pixels.add(positionB);
+//		pixelArray.add(pixels);
+//		
+//		pixels = new MonochromePixels(new Color(0.5f, 0.5f, 0.5f));
+//		for (Position position : blocks) {
+//			pixels.add(position);
+//		}
+//		pixelArray.add(pixels);
+//		
+//		PathFinder pathFinder = new PathFinder(new Size(width + 1, height + 1));
+//		pathFinder.setIsDestinationPredicate(new Predicate<Position>() {
+//			private NearbyPositions neighbours = new NearbyPositions();
+//			
+//			@Override
+//			public boolean test(Position t) {
+//				neighbours.setPosition(positionB);
+//				for (CardinalPoints direction : CardinalPoints.values()) {
+//					if (t.equalTo(neighbours.getPosition(direction))) {
+//						return true;
+//					}
+//				}
+//				return false;
+//			}
+//		});
+//		
+//		pathFinder.setMovementAllowedPredicate(new Predicate<Position>() {
+//
+//			@Override
+//			public boolean test(Position t) {
+//				if (t.equalTo(positionA) || t.equalTo(positionB)) {
+//					return false;
+//				}
+//				for (Position pos : blocks) {
+//					if(t.equalTo(pos)) {
+//						return false;
+//					}
+//				}
+//				
+//				return true;
+//			}
+//			
+//		});
+//		
+//		ArrayList<CardinalPoints> cardinalPoints = pathFinder.find(positionA, Integer.MAX_VALUE);
+//		pixels = new MonochromePixels(new Color(0.85f, 0.f, 0.f));
+//		MutablePosition mutablePosition = new MutablePosition(positionA);
+//		for (CardinalPoints direction : cardinalPoints) {
+//			mutablePosition.move(direction);
+//			pixels.add(new Position(mutablePosition.getX(), mutablePosition.getY()));
+//		}
+//		System.out.println("size: " + pixels.size());
+//		pixelArray.add(pixels);
+//		
+//		glPanel = new OpenGLPanel(capabilities, pixelArray);
+//		return new JScrollPane(glPanel.makeViewport(width, height),
+//							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+//							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//	}
+	
+	private JComponent createRightSide() {
+		
+		Size size = new Size(50, 50);
+		Field<Cell> field = new BattleField(size);
+		
+		Team teamA = new Team(0);
+		Team teamB = new Team(1);
+		
+		Squad squadAA = new Squad(teamA);
+		Squad squadBA = new Squad(teamB);
+		
+		squadAA.setSize(5); squadAA.setFlag(new Color(1.f, 0.f, 0.f));
+		squadBA.setSize(5); squadBA.setFlag(new Color(0.f, 1.f, 1.f));
+		
+		Unit unitAA = new Unit(squadAA, 100);
+		Unit unitBA = new Unit(squadBA, 100);
+		
+		ArrayList<Placement<Unit>> units = new ArrayList<>();
+		
+		for (int i = 0; i < squadAA.getSize(); i++) {
+			MutablePosition position = null;
+			do {
+				position = new MutablePosition((int) (Math.random() * 10),
+											   (int) (Math.random() * 10) + 40);
+			} while (field.get(position).hasUnit());
+			
+			Placement<Unit> newUnit = new Placement<Unit>(unitAA.copy(), position);
+			units.add(newUnit);
+			field.get(position).setUnit(newUnit);
+		}
+		
+		for (int i = 0; i < squadBA.getSize(); i++) {
+			MutablePosition position = null;
+			do {
+				position = new MutablePosition((int) (Math.random() * 10) + 40,
+											   (int) (Math.random() * 10));
+			} while (field.get(position).hasUnit());
+			
+			Placement<Unit> newUnit = new Placement<Unit>(unitBA.copy(), position);
+			units.add(newUnit);
+			field.get(position).setUnit(newUnit);
+		}
+
+		state = new State(field, units);
+		engine = new Engine(state);
+		
+		pixelArray = new ArrayList<>();
+		updatePixelArray(units);
+		
 		GLProfile glProfile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
-		
-		ArrayList<MonochromePixels> pixelArray = new ArrayList<>();
-//		for (int i = 0; i < 3; i++) {
-//			MonochromePixels pixels = new MonochromePixels(new Color((float)Math.random(),
-//																	 (float)Math.random(),
-//																	 (float)Math.random()));
-//			for (int j = 0; j < 500; j++) {
-//				pixels.add(new Point((int)(Math.random() * (width + 1)),
-//								     (int)(Math.random() * (heignt + 1))));
-//			}
-//			pixelArray.add(pixels);
-//		}
-		
-		Point pointA = new Point(31, 289);
-		Point pointB = new Point(250, 23);
-		Position positionA = new Position((int) pointA.getX(), (int) pointA.getY());
-		Position positionB = new Position((int) pointB.getX(), (int) pointB.getY());
-//		Position[] blocks = new Position[width - 1];
-//		int j = 0;
-//		for (int i = 0; i < blocks.length;) {
-//			if (j++ != 80) {
-//				blocks[i] = new Position(i, Math.min(j, height));
-//				i++;
-//			}
-//		}
-		Position[] blocks = new Position[width];
-		int j = 0;
-		for (int i = 0; i < blocks.length; i++) {
-			blocks[i] = new Position(i, j++);
-		}
-		
-		MonochromePixels pixels;
-		
-		pixels = new MonochromePixels(new Color(0.f, 0.9f, 0.f));
-		pixels.add(pointA);
-		pixelArray.add(pixels);
-		
-		pixels = new MonochromePixels(new Color(0.f, .5f, 1.f));
-		pixels.add(pointB);
-		pixelArray.add(pixels);
-		
-		pixels = new MonochromePixels(new Color(0.5f, 0.5f, 0.5f));
-		for (Position position : blocks) {
-			pixels.add(new Point(position.getX(), position.getY()));
-		}
-		pixelArray.add(pixels);
-		
-		PathFinder pathFinder = new PathFinder(new Size(width + 1, height + 1));
-		pathFinder.setIsDestinationPredicate(new Predicate<Position>() {
-			private Neighbours neighbours = new Neighbours();
-			
-			@Override
-			public boolean test(Position t) {
-				neighbours.setPosition(positionB);
-				for (CardinalPoints direction : CardinalPoints.values()) {
-					if (t.equalTo(neighbours.getNeighbour(direction))) {
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-		
-		pathFinder.setMovementAllowedPredicate(new Predicate<Position>() {
-
-			@Override
-			public boolean test(Position t) {
-				if (t.equalTo(positionA) || t.equalTo(positionB)) {
-					return false;
-				}
-				for (Position pos : blocks) {
-					if(t.equalTo(pos)) {
-						return false;
-					}
-				}
-				
-				return true;
-			}
-			
-		});
-		
-		ArrayList<CardinalPoints> cardinalPoints = pathFinder.find(positionA, 2);
-		pixels = new MonochromePixels(new Color(0.85f, 0.f, 0.f));
-		MutablePosition mutablePosition = new MutablePosition(positionA);
-		for (CardinalPoints direction : cardinalPoints) {
-			mutablePosition.move(direction);
-			pixels.add(new Point(mutablePosition.getX(), mutablePosition.getY()));
-		}
-		System.out.println("size: " + pixels.size());
-		pixelArray.add(pixels);
-		
 		glPanel = new OpenGLPanel(capabilities, pixelArray);
-		return new JScrollPane(glPanel.makeViewport(width, height),
+		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight()),
 							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	}
+	
+	private void updatePixelArray(ArrayList<Placement<Unit>> units) {
+		pixelArray.clear();
+		
+		for (Placement<Unit> placement : units) {
+			Position position = placement.getPosition();
+			Color color = placement.get().getSquad().getFlag();
+			MonochromePixels monochromePixels = null;
+			
+			for (MonochromePixels mp : pixelArray) {
+				if (mp.getColor().get() == color.get()) {
+					monochromePixels = mp;
+					break;
+				}
+			}
+			
+			if (monochromePixels == null) {
+				monochromePixels = new MonochromePixels(color);
+				pixelArray.add(monochromePixels);
+			}
+			
+			monochromePixels.add(position);
+		}
 	}
 	
 //	private class ColorChooser extends JColorChooser {
