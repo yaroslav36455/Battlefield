@@ -132,6 +132,7 @@ public class Window extends JFrame {
 	private JButton removeTeam;
 	private JButton createSquad;
 	private JButton removeSquad;
+	private JButton editSquad;
 	private JButton createUnits;
 	private JButton removeUnits;
 	
@@ -152,6 +153,7 @@ public class Window extends JFrame {
 		removeTeam = createRemoveTeamButton();
 		createSquad = createAddSquadButton();
 		removeSquad = createRemoveSquadButton();
+		editSquad = createEditSquadButton();
 		createUnits = createAddUnitsButton();
 		removeUnits = createRemoveUnitsButton();
 		teamPanel = createTeamTablePanel();
@@ -275,6 +277,7 @@ public class Window extends JFrame {
 					@Override
 					public void accept(TableRow squadRow) {
 						removeSquad.setEnabled(true);
+						editSquad.setEnabled(true);
 					}
 				},
 				new Consumer<TableRow>() {
@@ -283,6 +286,7 @@ public class Window extends JFrame {
 					@Override
 					public void accept(TableRow squadRow) {
 						removeSquad.setEnabled(false);
+						editSquad.setEnabled(false);
 					}
 				});
 		
@@ -400,6 +404,20 @@ public class Window extends JFrame {
 		return button;
 	}
 	
+	private JButton createEditSquadButton() {
+		JButton button = new JButton("Edit Squad");
+		
+		button.setEnabled(false);
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("unimplemented createEditSquadButton()");
+			}
+		});
+		
+		return button;
+	}
+	
 	private JButton createAddUnitsButton() {
 		JButton button = new JButton("Add Units");
 		
@@ -444,7 +462,7 @@ public class Window extends JFrame {
 	}
 	
 	private JPanel createSquadTablePanel() {
-		JPanel panel = createTablePanel(createSquad, removeSquad,
+		JPanel panel = createTablePanel(createSquad, removeSquad, editSquad,
 									    createUnits, removeUnits);
 		squadTablePanel = new JPanel();
 		panel.add(squadTablePanel);
@@ -557,8 +575,8 @@ public class Window extends JFrame {
 		Squad squadAA = new Squad(teamA);
 		Squad squadBA = new Squad(teamB);
 		
-		squadAA.setSize(5); squadAA.setFlag(new Color(1.f, 0.f, 0.f));
-		squadBA.setSize(5); squadBA.setFlag(new Color(0.f, 1.f, 1.f));
+		squadAA.setSize(40); squadAA.setFlag(new Color(1.f, 0.f, 0.f));
+		squadBA.setSize(40); squadBA.setFlag(new Color(0.f, 1.f, 1.f));
 		
 		Unit unitAA = new Unit(squadAA, 100);
 		Unit unitBA = new Unit(squadBA, 100);
@@ -598,7 +616,7 @@ public class Window extends JFrame {
 		GLProfile glProfile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
 		glPanel = new ScaleableGLJPanel(capabilities, pixelArray);
-		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 5),
+		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 4),
 							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
