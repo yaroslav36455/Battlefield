@@ -135,7 +135,7 @@ public class Window extends JFrame {
 	private JButton createUnits;
 	private JButton removeUnits;
 	
-	private OpenGLPanel glPanel;
+	private ScaleableGLJPanel glPanel;
 
 	public Window() {
 		super("Battlefield");
@@ -597,8 +597,8 @@ public class Window extends JFrame {
 		
 		GLProfile glProfile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
-		glPanel = new OpenGLPanel(capabilities, pixelArray);
-		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight()),
+		glPanel = new ScaleableGLJPanel(capabilities, pixelArray);
+		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 5),
 							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}

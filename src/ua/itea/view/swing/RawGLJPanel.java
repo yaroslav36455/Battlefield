@@ -3,7 +3,6 @@ package ua.itea.view.swing;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -19,11 +18,11 @@ import com.jogamp.opengl.glu.GLU;
 import ua.itea.model.Color;
 import ua.itea.model.util.Position;
 
-public class OpenGLPanel extends GLJPanel {
+public class RawGLJPanel extends GLJPanel {
 	
 	private ArrayList<MonochromePixels> pixelArray;
 	
-	public OpenGLPanel(GLCapabilities capabilities, ArrayList<MonochromePixels> pixelArray) {
+	public RawGLJPanel(GLCapabilities capabilities, ArrayList<MonochromePixels> pixelArray) {
 		super(capabilities);
 		this.pixelArray = pixelArray;
 		
@@ -106,7 +105,7 @@ public class OpenGLPanel extends GLJPanel {
 					}
 				}
 				
-				gl2.glColor3f(0, 0.5f, 0.5f);
+				gl2.glColor3f(0, 0, 0);
 				gl2.glVertex2f(1, 1);
 				gl2.glEnd();
 				
