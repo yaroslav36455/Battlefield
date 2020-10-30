@@ -2,14 +2,18 @@ package ua.itea.model;
 
 import java.util.ArrayList;
 
+import ua.itea.model.Team.Squad;
+import ua.itea.model.Team.Squad.Unit;
+
 public class State {
 	private Field<Cell> field;
 	private ArrayList<Team> teams;
 	private ArrayList<Placement<Unit>> units;
 	private boolean hasBeenUpdated;
 	
-	public State(Field<Cell> field, ArrayList<Placement<Unit>> units) {
+	public State(Field<Cell> field, ArrayList<Team> teams, ArrayList<Placement<Unit>> units) {
 		this.field = field;
+		this.teams = teams;
 		this.units = units;
 	}
 	
@@ -19,12 +23,45 @@ public class State {
 		return tmp;
 	}
 	
-	public void add(Team team, Squad ...squads) {
-		//TODO
+	public void addTeam(Team team) {
+		teams.add(team);
 	}
 	
-	public void add(int teamId, Squad squad, Squad ...squads) {
+	public ArrayList<Team> getTeams() {
+		return teams;
+	}
+	
+	public void removeTeam(Team team) {
+		for (Squad squad : team) {
+			removeSquad(squad);
+		}
+		
+		team.removeAllSquads();
+	}
+	
+	public void addSquad(Squad squad) {
 		//TODO		
+	}
+	
+	public void removeSquad(Squad squad) {
+//		ArrayList<Placement<Unit>> newArray = new ArrayList<>(units.size());
+		
+//		for (Unit unit : squad) {
+//			
+//		} 
+//		
+//		for (Placement<Unit> placementUnit : units) {
+//			Squad currentSquad = placementUnit.get().getSquad();
+//			
+//			if (currentSquad.getId() == squad.getId()) {
+//				field.get(placementUnit.getPosition()).setUnit(null);
+//				currentSquad.setSize(currentSquad.getSize() - 1);
+//			} else {
+//				newArray.add(placementUnit);
+//			}
+//		}
+//
+//		units = newArray;
 	}
 	
 	public Field<Cell> getField() {

@@ -8,19 +8,21 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import ua.itea.model.State;
+import ua.itea.model.Team;
+import ua.itea.model.Team.Squad;
 
 public class TableManager {	
 	private State state;
-	private OwnTable teams;
-	private ArrayList<OwnTable> squads;
-	Consumer<OwnTable> teamRowSelection;
-	Consumer<OwnTable> teamRowUnselection;
-	Consumer<TableRow> squadRowSelection;
-	Consumer<TableRow> squadRowUnselection;
+	private FormationTable teams;
+	private ArrayList<FormationTable> squads;
+	private Consumer<FormationTable> teamRowSelection;
+	private Consumer<FormationTable> teamRowUnselection;
+	private Consumer<TableRow> squadRowSelection;
+	private Consumer<TableRow> squadRowUnselection;
 	
 	public TableManager(State state,
-						Consumer<OwnTable> teamRowSelection,
-						Consumer<OwnTable> teamRowUnselection,
+						Consumer<FormationTable> teamRowSelection,
+						Consumer<FormationTable> teamRowUnselection,
 						Consumer<TableRow> squadRowSelection,
 						Consumer<TableRow> squadRowUnselection) {
 		this.state = state;
@@ -32,32 +34,32 @@ public class TableManager {
 		this.squadRowUnselection = squadRowUnselection;
 	}
 	
-	public OwnTable getTeam() {
+	public FormationTable getTeams() {
 		return teams;
 	}
 	
-	public OwnTable getSquad(int index) {
+	public FormationTable getSquad(int index) {
 		return squads.get(index);
 	}
 	
-	public OwnTable getSquad() {
+	public FormationTable getSquad() {
 		return squads.get(teams.getSelectedRow());
 	}
 	
-	public void addSquad() {
-		OwnTable currentSquad = squads.get(teams.getSelectedRow());
-		currentSquad.add();
+	public void addSquad(Squad squad) {
+		FormationTable currentSquad = squads.get(teams.getSelectedRow());
+		currentSquad.add(squad);
 	}
 	
-	public void removeSquad() {
-		OwnTable squadTable = squads.get(teams.getSelectedRow());
+	public Squad removeSquad() {
+		FormationTable squadTable = squads.get(teams.getSelectedRow());
 		
-		squadTable.removeRow(squadTable.getSelectedRow());
+		return (Squad) squadTable.removeRow(squadTable.getSelectedRow());
 	}
 	
-	public void addTeam() {
+	public void addTeam(Team team) {
 		squads.add(createSquadTable());
-		teams.add();
+		teams.add(team);
 	}
 	
 	public void removeTeam() {
@@ -67,15 +69,28 @@ public class TableManager {
 		squads.remove(index);
 	}
 	
-	private OwnTable createTeamTable() {
-		OwnTable newTable =  new OwnTable();
+	public Team getSelectedTeam() {
+		return (Team) teams.get(teams.getSelectedRow());
+	}
+	
+	public Squad getSelectedSquad() {
+		int teamSelectedRow = teams.getSelectedRow();
+		int squadSelectedRow = squads.get(teamSelectedRow).getSelectedRow();
+		
+		FormationTable squadTable = squads.get(squadSelectedRow);
+		
+		return (Squad) squadTable.get(squadSelectedRow);
+	}
+	
+	private FormationTable createTeamTable() {
+		FormationTable newTable =  new FormationTable();
 		
 		newTable.getSelectionModel().addListSelectionListener(new TeamListSelectionListener());
 		return newTable;
 	}
 	
-	private OwnTable createSquadTable() {
-		OwnTable newTable =  new OwnTable();
+	private FormationTable createSquadTable() {
+		FormationTable newTable =  new FormationTable();
 		
 		SquadListSelectionListener<TableRow> slsl
 						= new SquadListSelectionListener<>(newTable,
@@ -123,12 +138,12 @@ public class TableManager {
 	
 	private static class SquadListSelectionListener<T> implements ListSelectionListener {
 
-		private OwnTable table;
+		private FormationTable table;
 		private Consumer<T> selectionListener;
 		private Consumer<T> unselectionListener;
 		private IntegerSelector value;
 		
-		public SquadListSelectionListener(OwnTable table,
+		public SquadListSelectionListener(FormationTable table,
 										  Consumer<T> selectionListener,
 										  Consumer<T> unselectionListener) {
 			this.table = table;

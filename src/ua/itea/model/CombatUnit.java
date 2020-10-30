@@ -2,6 +2,8 @@ package ua.itea.model;
 
 import java.util.ArrayList;
 
+import ua.itea.model.Team.Squad;
+import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.Position;
 

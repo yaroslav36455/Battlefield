@@ -3,21 +3,26 @@ package ua.itea.view.swing;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-public class OwnTable extends JTable {
+import ua.itea.model.Formation;
+
+public class FormationTable extends JTable {
 	
-	public OwnTable() {
-		super(new OwnTableModel());
+	private ArrayList<Formation> formations;
+	
+	public FormationTable() {
+		super(new FormationTableModel());
 		setFocusable(false);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		getTableHeader().setReorderingAllowed(false);
 		setFillsViewportHeight(true);
-		getColumnModel().getColumn(0).setHeaderRenderer(new OwnTableCellHeaderRenderer());
+		getColumnModel().getColumn(0).setHeaderRenderer(new FormationTableCellHeaderRenderer());
 		//getSelectionModel().addListSelectionListener(new TeamListSelectionListener());
 		
 		//setPreferredScrollableViewportSize(new Dimension(0, table.getRowHeight() * table.getRowCount()));
@@ -29,20 +34,15 @@ public class OwnTable extends JTable {
 		setDefaultRenderer(Color.class, new TableColorCellRenderer());			
 		setDefaultRenderer(Integer.class, new TableIntegerCellRenderer());
 		setDefaultEditor(Color.class, new TableColorCellEditor());
+		
+		formations = new ArrayList<>();
 	}
 	
-	public void add() {
-		OwnTableModel tableModel = (OwnTableModel) getModel();
+	public void add(Formation formation) {
+		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
-		boolean show = (int) (Math.random() * 2) == 0 ? false : true;
-		String name = "Test Name";
-		Color color = new Color((int) (Math.random() * 256),
-								(int) (Math.random() * 256),
-								(int) (Math.random() * 256));
-		int alive = (int) (Math.random() * 5000);
-		int dead = (int) (Math.random() * 5000);
-		
-		tableModel.addRow(new TableRow(show, name, color, alive, dead));
+		tableModel.addRow(new TableRow(true, formation.getName(),
+									   formation.getColor(), formation.getSize(), 0));
 //		table.setPreferredScrollableViewportSize(new Dimension(0, table.getRowHeight() * table.getRowCount()));
 		
 		if (getSelectedRow() != -1) {
@@ -51,14 +51,16 @@ public class OwnTable extends JTable {
 			removeRowSelectionInterval(index, index);
 		}
 		setRowSelectionInterval(getLastOrdinaryRowIndex(), getLastOrdinaryRowIndex());
+		
+		formations.add(formation);
 	}
 	
-	public void removeRow() {
-		removeRow(getLastOrdinaryRowIndex());
+	public Formation removeRow() {
+		return removeRow(getLastOrdinaryRowIndex());
 	}
 	
-	public void removeRow(int index) {
-		OwnTableModel tableModel = (OwnTableModel) getModel();
+	public Formation removeRow(int index) {
+		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
 		tableModel.removeRow(index);
 		
@@ -68,6 +70,15 @@ public class OwnTable extends JTable {
 			index--;
 			setRowSelectionInterval(index, index);
 		}
+		
+		Formation tmp = formations.get(index);
+		formations.remove(index);
+		
+		return tmp;
+	}
+	
+	public Formation get(int index) {
+		return formations.get(index);
 	}
 	
 	public boolean isTotalRow(int index) {

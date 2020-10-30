@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
+import ua.itea.model.Team.Squad;
+import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
@@ -191,8 +193,7 @@ public class Engine {
 		opponentUnit.get().setHealth(opponentHealth);
 		
 		if (!isAlive(opponentUnit.get())) {
-			Squad opponentSquad = opponentUnit.get().getSquad();
-			opponentSquad.setSize(opponentSquad.getSize() - 1);
+			opponentUnit.get().dispose();
 			state.getField().get(opponentUnit.getPosition()).setUnit(null);
 		}
 	}

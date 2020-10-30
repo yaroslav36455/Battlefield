@@ -5,13 +5,13 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-public class OwnTableModel extends AbstractTableModel {
+public class FormationTableModel extends AbstractTableModel {
 	private Object[] header = { new Boolean(false), "Name", "Color", "Alive", "Dead", "Total" };
 	//private Object[] header = { true, false, true, false, true, true };
 	//private Object[] header = { true, "Name", Color.BLUE, 435, 34, 1234 };
 	private ArrayList<TableRow> data;
 	
-	public OwnTableModel() {
+	public FormationTableModel() {
 		data = new ArrayList<>();
 		data.add(new TableRow(null, "Total", null, 0, 0));
 		

@@ -1,5 +1,6 @@
 package ua.itea.model;
 
+import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.CardinalPoints;
 
 public class ImpactDirection {

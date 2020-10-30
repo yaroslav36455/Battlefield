@@ -1,7 +1,9 @@
 package ua.itea.view.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -37,8 +39,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -89,21 +93,18 @@ import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.sun.org.apache.xerces.internal.xinclude.XPointerSchema;
 
-import sun.swing.table.DefaultTableCellHeaderRenderer;
 import ua.itea.model.Engine;
 import ua.itea.model.Field;
 import ua.itea.model.BattleField;
 import ua.itea.model.Cell;
-import ua.itea.model.Color;
 import ua.itea.model.NearbyPositions;
 import ua.itea.model.PathFinder;
 import ua.itea.model.Placement;
-import ua.itea.model.Squad;
 import ua.itea.model.State;
 import ua.itea.model.Team;
-import ua.itea.model.Unit;
+import ua.itea.model.Team.Squad;
+import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
@@ -113,6 +114,8 @@ public class Window extends JFrame {
 	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
+	private Squad squadAA;
+	private Squad squadBA;
 //	
 //	private JButton loadButton;
 //	private JButton saveButton;
@@ -120,6 +123,8 @@ public class Window extends JFrame {
 //	private JButton beginButton;
 //	private JButton continueButton;
 //	private JButton pauseButton;
+	
+	private AddTeamDialog addTeamDialog;
 	
 	private TableManager tableManager;
 	private JPanel teamPanel;
@@ -196,11 +201,11 @@ public class Window extends JFrame {
 	         });
 		
 		tableManager = new TableManager(null,
-				new Consumer<OwnTable>() {
+				new Consumer<FormationTable>() {
 					/* team row selection */
 			
 					@Override
-					public void accept(OwnTable squadTable) {
+					public void accept(FormationTable squadTable) {
 						removeTeam.setEnabled(true);
 						createSquad.setEnabled(true);
 						if (squadTable.isSelectedOrdinaryRow()) {
@@ -237,11 +242,11 @@ public class Window extends JFrame {
 						System.out.println("selection count " + squadTablePanel.getComponentCount());
 					}
 				},
-				new Consumer<OwnTable>() {
+				new Consumer<FormationTable>() {
 					/* team row unselection */
 					
 					@Override
-					public void accept(OwnTable squadTable) {
+					public void accept(FormationTable squadTable) {
 						removeTeam.setEnabled(false);
 						createSquad.setEnabled(false);
 						
@@ -278,6 +283,8 @@ public class Window extends JFrame {
 					public void accept(TableRow squadRow) {
 						removeSquad.setEnabled(true);
 						editSquad.setEnabled(true);
+						createUnits.setEnabled(true);
+						removeUnits.setEnabled(true);
 					}
 				},
 				new Consumer<TableRow>() {
@@ -287,16 +294,21 @@ public class Window extends JFrame {
 					public void accept(TableRow squadRow) {
 						removeSquad.setEnabled(false);
 						editSquad.setEnabled(false);
+						createUnits.setEnabled(false);
+						removeUnits.setEnabled(false);
 					}
 				});
 		
 		teamTablePanel.setLayout(new GridLayout());
-		teamTablePanel.add(tableManager.getTeam().makeScrollable());
+		teamTablePanel.add(tableManager.getTeams().makeScrollable());
 		
 		squadTablePanel.setLayout(new GridLayout());
 		
 		//initializeSimulation();
 		setKeyListeners();
+		
+		tableManager.addTeam(state.getTeams().get(0));
+		tableManager.addTeam(state.getTeams().get(1));
 	}
 
 	private void setKeyListeners() {
@@ -316,46 +328,54 @@ public class Window extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					engine.iterate();
+					System.out.println("iteraterd");
 					ArrayList<Placement<Unit>> units = state.getUnits();
 					
 					
-					Collections.sort(units, new Comparator<Placement<Unit>>() {
-
-						@Override
-						public int compare(Placement<Unit> o1, Placement<Unit> o2) {
-							int o1TeamId = o1.get().getSquad().getTeam().getId();
-							int o2TeamId = o2.get().getSquad().getTeam().getId();
-							int o1Id = o1.get().getId();
-							int o2Id = o2.get().getId();
-							
-							int teamCompare = Integer.compare(o1TeamId, o2TeamId);
-							
-							return teamCompare != 0 ? teamCompare : Integer.compare(o1Id, o2Id);
-						}
-					});
-					
-					for (Placement<Unit> placement : units) {
-						System.out.println("id: " + placement.get().getSquad().getTeam().getId() + "|"
-								+ "id: " + placement.get().getId() + "; "
-								+ placement.getPosition() + " health: " + placement.get().getHealth());
-					}
+//					Collections.sort(units, new Comparator<Placement<Unit>>() {
+//
+//						@Override
+//						public int compare(Placement<Unit> o1, Placement<Unit> o2) {
+//							int o1TeamId = o1.get().getSquad().getTeam().getId();
+//							int o2TeamId = o2.get().getSquad().getTeam().getId();
+//							int o1Id = o1.get().getId();
+//							int o2Id = o2.get().getId();
+//							
+//							int teamCompare = Integer.compare(o1TeamId, o2TeamId);
+//							
+//							return teamCompare != 0 ? teamCompare : Integer.compare(o1Id, o2Id);
+//						}
+//					});
+//					
+//					for (Placement<Unit> placement : units) {
+//						System.out.println("id: " + placement.get().getSquad().getTeam().getId() + "|"
+//								+ "id: " + placement.get().getId() + "; "
+//								+ placement.getPosition() + " health: " + placement.get().getHealth());
+//					}
 					
 					updatePixelArray(units);
 					glPanel.display();
+//					System.out.println("Red:  " + squadAA.getSize());
+//					System.out.println("Cyan: " + squadBA.getSize());
+					
 				}
 			}
 		});
-		
 	}
 
 	private JButton createAddTeamButton() {
+		JFrame thisWindow = this;
 		JButton button = new JButton("Add Team");
 		
 		button.setEnabled(true);
 		button.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableManager.addTeam();
+//				addTeamDialog = new AddTeamDialog(thisWindow, "Add Team");
+//				addTeamDialog.refresh("Text #22", new Color((int) (Math.random() * Integer.MAX_VALUE)));
+				
+				tableManager.addTeam(new Team());
 			}
 		});
 		
@@ -381,9 +401,13 @@ public class Window extends JFrame {
 		
 		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableManager.addSquad();
+				Team team = tableManager.getSelectedTeam();
+				Squad squad = team.new Squad();
+				
+				tableManager.addSquad(squad);
 			}
 		});
 		
@@ -397,7 +421,10 @@ public class Window extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableManager.removeSquad();
+				Team team = tableManager.getSelectedTeam();
+				Squad squad = tableManager.removeSquad();
+				
+				team.removeSquad(squad);
 			}
 		});
 		
@@ -569,21 +596,21 @@ public class Window extends JFrame {
 		Size size = new Size(50, 50);
 		Field<Cell> field = new BattleField(size);
 		
-		Team teamA = new Team(0);
-		Team teamB = new Team(1);
+		Team teamA = new Team();
+		Team teamB = new Team();
 		
-		Squad squadAA = new Squad(teamA);
-		Squad squadBA = new Squad(teamB);
+		squadAA = teamA.new Squad();
+		squadBA = teamB.new Squad();
 		
-		squadAA.setSize(40); squadAA.setFlag(new Color(1.f, 0.f, 0.f));
-		squadBA.setSize(40); squadBA.setFlag(new Color(0.f, 1.f, 1.f));
+		squadAA.setColor(new Color(1.f, 0.f, 0.f));
+		squadBA.setColor(new Color(0.f, 1.f, 1.f));
 		
-		Unit unitAA = new Unit(squadAA, 100);
-		Unit unitBA = new Unit(squadBA, 100);
+		Unit unitAA = squadAA.new Unit(100);
+		Unit unitBA = squadBA.new Unit(100);
 		
 		ArrayList<Placement<Unit>> units = new ArrayList<>();
 		
-		for (int i = 0; i < squadAA.getSize(); i++) {
+		for (int i = 0; i < 40; i++) {
 			MutablePosition position = null;
 			do {
 				position = new MutablePosition((int) (Math.random() * 10),
@@ -595,7 +622,7 @@ public class Window extends JFrame {
 			field.get(position).setUnit(newUnit);
 		}
 		
-		for (int i = 0; i < squadBA.getSize(); i++) {
+		for (int i = 0; i < 40; i++) {
 			MutablePosition position = null;
 			do {
 				position = new MutablePosition((int) (Math.random() * 10) + 40,
@@ -607,7 +634,11 @@ public class Window extends JFrame {
 			field.get(position).setUnit(newUnit);
 		}
 
-		state = new State(field, units);
+		ArrayList<Team> teams = new ArrayList<Team>();
+		teams.add(teamA);
+		teams.add(teamB);
+		
+		state = new State(field, teams, units);
 		engine = new Engine(state);
 		
 		pixelArray = new ArrayList<>();
@@ -626,11 +657,11 @@ public class Window extends JFrame {
 		
 		for (Placement<Unit> placement : units) {
 			Position position = placement.getPosition();
-			Color color = placement.get().getSquad().getFlag();
+			Color color = placement.get().getSquad().getColor();
 			MonochromePixels monochromePixels = null;
 			
 			for (MonochromePixels mp : pixelArray) {
-				if (mp.getColor().get() == color.get()) {
+				if (mp.getColor().equals(color)) {
 					monochromePixels = mp;
 					break;
 				}

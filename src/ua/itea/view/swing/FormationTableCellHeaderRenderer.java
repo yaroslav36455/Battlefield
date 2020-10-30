@@ -27,11 +27,11 @@ import javax.swing.table.TableCellRenderer;
 import sun.swing.DefaultLookup;
 import sun.swing.table.DefaultTableCellHeaderRenderer;
 
-public class OwnTableCellHeaderRenderer extends JCheckBox implements TableCellRenderer {
+public class FormationTableCellHeaderRenderer extends JCheckBox implements TableCellRenderer {
 	
 	//private JCheckBox checkBox;
 	
-	public OwnTableCellHeaderRenderer() {
+	public FormationTableCellHeaderRenderer() {
 		setEnabled(true);
 	}
 	

@@ -1,13 +1,13 @@
 package ua.itea.model;
 
+import java.awt.Color;
 import java.util.Objects;
 
 public abstract class Formation {
 	private IdGenerator idGenerator;
 	private int id;
 	private String name;
-	private Color flag;
-	private int size;
+	private Color color;
 	
 	public Formation(Formation outer) {
 		this(outer.generateId());
@@ -16,7 +16,6 @@ public abstract class Formation {
 	public Formation(int id) {
 		this.idGenerator = new IdGenerator();
 		this.id = id;
-		this.size = 0;
 	}
 	
 	public int generateId() {
@@ -35,21 +34,15 @@ public abstract class Formation {
 		this.name = name;
 	}
 
-	public Color getFlag() {
-		return flag;
+	public Color getColor() {
+		return color;
 	}
 
-	public void setFlag(Color flag) {
-		this.flag = flag;
+	public void setColor(Color color) {
+		this.color = color;
 	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
+	
+	public abstract int getSize();
 
 	@Override
 	public int hashCode() {

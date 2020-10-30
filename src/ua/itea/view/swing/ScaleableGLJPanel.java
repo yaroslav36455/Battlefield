@@ -1,5 +1,6 @@
 package ua.itea.view.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,7 +16,6 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
-import ua.itea.model.Color;
 import ua.itea.model.util.Position;
 
 public class ScaleableGLJPanel extends GLJPanel {
@@ -79,7 +79,9 @@ public class ScaleableGLJPanel extends GLJPanel {
 				
 				for (MonochromePixels monochromePixels : pixelArray) {
 					Color color = monochromePixels.getColor();
-					gl2.glColor3f(color.red(), color.green(), color.blue());
+					gl2.glColor3f(color.getRed() / 255.f,
+							  	  color.getGreen() / 255.f,
+							  	  color.getBlue() / 255);
 					
 					for (Position pos : monochromePixels) {
 						float x = pos.getX() + 1;

@@ -1,5 +1,7 @@
 package ua.itea.model;
 
+import ua.itea.model.Team.Squad;
+
 public class DogTag {
 //	private int teamId;
 //	private int squadId;
