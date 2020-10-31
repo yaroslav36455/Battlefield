@@ -63,7 +63,7 @@ public class PathFinder {
 			updatePath(start, maxPathLengh);
 		}
 		
-		System.out.println(begin + " - " + LocalTime.now());
+//		System.out.println(begin + " - " + LocalTime.now());
 		return path;
 	}
 	

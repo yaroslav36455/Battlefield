@@ -7,53 +7,47 @@ import javax.swing.table.AbstractTableModel;
 
 public class FormationTableModel extends AbstractTableModel {
 	private Object[] header = { new Boolean(false), "Name", "Color", "Alive", "Dead", "Total" };
-	//private Object[] header = { true, false, true, false, true, true };
-	//private Object[] header = { true, "Name", Color.BLUE, 435, 34, 1234 };
-	private ArrayList<TableRow> data;
+	private ArrayList<TableRow> ordinaryRows;
+	private TableRow totalRow;
 	
 	public FormationTableModel() {
-		data = new ArrayList<>();
-		data.add(new TableRow(null, "Total", null, 0, 0));
-		
-//		addRow(new TableRow(true,  "A", Color.blue,  234, 4563));
-//		addRow(new TableRow(true,  "B", Color.red,    12,   76));
-//		addRow(new TableRow(false, "C", Color.green, 456,    7));
+		ordinaryRows = new ArrayList<>();
+		totalRow = new TotalRow(ordinaryRows);
+	}
+	
+	public TableRow getRow(int index) {
+		return ordinaryRows.get(index);
+	}
+	
+	public void update() {
+		/* TODO: +1 ??? */
+		fireTableRowsUpdated(0, ordinaryRows.size() + 1);
 	}
 	
 	public void addRow(TableRow tableRow) {
-		addRow(data.size() - 1, tableRow);
+		ordinaryRows.add(tableRow);
+		update();
 	}
 	
 	public void addRow(int rowIndex, TableRow tableRow) {
-		int lastRowIndex = data.size() - 1;
-		
-		TableRow totalRow = data.get(lastRowIndex);
-		totalRow.setAlive(totalRow.getAlive() + tableRow.getAlive());
-		totalRow.setDead(totalRow.getDead() + tableRow.getDead());
-		
-		data.add(rowIndex, tableRow);
-		fireTableRowsInserted(rowIndex, lastRowIndex);
+		ordinaryRows.add(rowIndex, tableRow);
+		update();
 	}
 	
-	public void removeRow() {
-		removeRow(data.size() - 2);
+	public TableRow removeRow() {
+		return removeRow(ordinaryRows.size() - 1);
 	}
 	
-	public void removeRow(int rowIndex) {
-		int lastRowIndex = data.size() - 1;
-		TableRow toRemoveRow = data.get(rowIndex);
-		TableRow totalRow = data.get(lastRowIndex);
+	public TableRow removeRow(int rowIndex) {
+		TableRow row = ordinaryRows.remove(rowIndex);
 		
-		totalRow.setAlive(totalRow.getAlive() - toRemoveRow.getAlive());
-		totalRow.setDead(totalRow.getDead() - toRemoveRow.getDead());
-		
-		data.remove(rowIndex);
-		fireTableRowsDeleted(rowIndex, lastRowIndex);
+		update();
+		return row;
 	}
 	
 	@Override
 	public int getRowCount() {
-		return data.size();
+		return ordinaryRows.size() + 1;
 	}
 
 	@Override
@@ -68,7 +62,9 @@ public class FormationTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		TableRow tableRow = data.get(rowIndex);
+		TableRow tableRow = rowIndex != ordinaryRows.size()
+							? ordinaryRows.get(rowIndex)
+							: totalRow;
 		
 		switch (Column.values()[columnIndex]) {
 		case SHOW_OR_HIDE:
@@ -95,7 +91,9 @@ public class FormationTableModel extends AbstractTableModel {
 	
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-    	TableRow tableRow = data.get(rowIndex);
+    	TableRow tableRow = rowIndex != ordinaryRows.size()
+							? ordinaryRows.get(rowIndex)
+							: totalRow;
     	
 		switch (Column.values()[columnIndex]) {
 		case SHOW_OR_HIDE:
@@ -108,14 +106,11 @@ public class FormationTableModel extends AbstractTableModel {
 			tableRow.setColor(value);
 			break;
 		case ALIVE:
-			tableRow.setAlive(value);
-			break;
 		case DEAD:
-			tableRow.setDead(value);
-			break;
+			/* installation of alive and dead is not allowed */
+			
 		case TOTAL:
 			/* total computed automotically from alive and dead */
-			break;
 			
 		default:
 			throw new RuntimeException("Missed column in switch");
@@ -126,7 +121,7 @@ public class FormationTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int col) {
-    	return col < 3 && row < data.size() - 1 ||
-    			col == 0 && row == data.size() - 1;
+    	return col < 3 && row < ordinaryRows.size() ||
+    			col == 0 && row == ordinaryRows.size();
     }
 }

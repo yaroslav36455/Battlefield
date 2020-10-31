@@ -95,7 +95,6 @@ public class Engine {
 		}
 		
 		for (Placement<Unit> placementUnit : turnSequence) {
-			System.out.println(placementUnit.get().getHealth());
 			if (isAlive(placementUnit.get())) {
 				base.add(placementUnit);
 			}

@@ -59,6 +59,8 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			this.stats = new Stats(100, 8, 6, 1);
 			this.units = new ArrayList<>();
 			this.size = 0;
+			
+			Team.this.squads.add(this);
 		}
 		
 		public Team getTeam() {
@@ -151,6 +153,7 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			private void add() {
 				units.add(this);
 				size++;
+				System.out.println("Squad: " + Squad.this.getId() + "; size: " + size);
 			}
 		}
 	}

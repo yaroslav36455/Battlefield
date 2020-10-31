@@ -117,6 +117,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 		gbc.anchor = GridBagConstraints.CENTER;
 		panel.add(this, gbc);
 		
+		panel.setBackground(new Color(0, 0, 0));
 		return panel;
 	}
 }

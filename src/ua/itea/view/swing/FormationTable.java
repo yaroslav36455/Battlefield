@@ -14,8 +14,6 @@ import ua.itea.model.Formation;
 
 public class FormationTable extends JTable {
 	
-	private ArrayList<Formation> formations;
-	
 	public FormationTable() {
 		super(new FormationTableModel());
 		setFocusable(false);
@@ -34,15 +32,16 @@ public class FormationTable extends JTable {
 		setDefaultRenderer(Color.class, new TableColorCellRenderer());			
 		setDefaultRenderer(Integer.class, new TableIntegerCellRenderer());
 		setDefaultEditor(Color.class, new TableColorCellEditor());
-		
-		formations = new ArrayList<>();
 	}
 	
-	public void add(Formation formation) {
+	public void update() {
+		((FormationTableModel) getModel()).update();
+	}
+	
+	public void add(TableRow tableRow) {
 		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
-		tableModel.addRow(new TableRow(true, formation.getName(),
-									   formation.getColor(), formation.getSize(), 0));
+		tableModel.addRow(tableRow);
 //		table.setPreferredScrollableViewportSize(new Dimension(0, table.getRowHeight() * table.getRowCount()));
 		
 		if (getSelectedRow() != -1) {
@@ -51,18 +50,16 @@ public class FormationTable extends JTable {
 			removeRowSelectionInterval(index, index);
 		}
 		setRowSelectionInterval(getLastOrdinaryRowIndex(), getLastOrdinaryRowIndex());
-		
-		formations.add(formation);
 	}
 	
-	public Formation removeRow() {
+	public TableRow removeRow() {
 		return removeRow(getLastOrdinaryRowIndex());
 	}
 	
-	public Formation removeRow(int index) {
+	public TableRow removeRow(int index) {
 		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
-		tableModel.removeRow(index);
+		TableRow row = tableModel.removeRow(index);
 		
 		if (index < getTotalRowIndex()) {
 			setRowSelectionInterval(index, index);	
@@ -71,14 +68,13 @@ public class FormationTable extends JTable {
 			setRowSelectionInterval(index, index);
 		}
 		
-		Formation tmp = formations.get(index);
-		formations.remove(index);
-		
-		return tmp;
+		return row;
 	}
 	
-	public Formation get(int index) {
-		return formations.get(index);
+	public TableRow getRow(int index) {
+		FormationTableModel tableModel = (FormationTableModel) getModel();
+		
+		return tableModel.getRow(index);
 	}
 	
 	public boolean isTotalRow(int index) {
