@@ -100,6 +100,7 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 						if (units.get(index) != null) {
 							return true;
 						}
+						
 						index++;
 					}
 					
@@ -108,7 +109,7 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 
 				@Override
 				public Unit next() {
-					return units.get(index);
+					return units.get(index++);
 				}
 				
 			};

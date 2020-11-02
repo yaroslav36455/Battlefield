@@ -2,111 +2,41 @@ package ua.itea.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EventObject;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.colorchooser.DefaultColorSelectionModel;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.plaf.basic.BasicSplitPaneUI.BasicHorizontalLayoutManager;
-import javax.swing.plaf.basic.BasicSplitPaneUI.BasicVerticalLayoutManager;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
-import com.jogamp.common.util.locks.RecursiveLock;
-import com.jogamp.nativewindow.NativeSurface;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAnimatorControl;
-import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLCapabilitiesImmutable;
-import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.GLDrawableFactory;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.GLRunnable;
-import com.jogamp.opengl.GLStateKeeper.Listener;
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.awt.GLJPanel;
-import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.util.AnimatorBase;
-import com.jogamp.opengl.util.FPSAnimator;
 
 import ua.itea.model.Engine;
 import ua.itea.model.Field;
 import ua.itea.model.BattleField;
 import ua.itea.model.Cell;
-import ua.itea.model.NearbyPositions;
-import ua.itea.model.PathFinder;
 import ua.itea.model.Placement;
 import ua.itea.model.State;
 import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 import ua.itea.model.Team.Squad.Unit;
-import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
@@ -371,7 +301,7 @@ public class Window extends JFrame {
 			}
 		}
 		
-		updatePixelArray(units);
+		updatePixelArray(state.getTeams());
 		glPanel.display();
 	}
 
@@ -393,10 +323,9 @@ public class Window extends JFrame {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					engine.iterate();
 					System.out.println("iteraterd");
-					ArrayList<Unit> units = state.getUnits();
 					
 					tableManager.update();
-					updatePixelArray(units);
+					updatePixelArray(state.getTeams());
 					glPanel.display();
 				}
 			}
@@ -573,7 +502,7 @@ public class Window extends JFrame {
 					cell.setUnit(newUnit);
 					state.getUnits().add(newUnit);
 					
-					updatePixelArray(state.getUnits());
+					updatePixelArray(state.getTeams());
 					tableManager.update();
 					glPanel.display();
 				}
@@ -586,27 +515,18 @@ public class Window extends JFrame {
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 	
-	private void updatePixelArray(ArrayList<Unit> units) {
+	private void updatePixelArray(ArrayList<Team> teams) {
 		pixelArray.clear();
 		
-		for (Unit unit : units) {
-			Position position = unit.getPlacement().getPosition();
-			Color color = unit.getSquad().getColor();
-			MonochromePixels monochromePixels = null;
+		for (Team team : teams) {
+			MonochromePixels monochromePixels = new MonochromePixels(team.getColor());
 			
-			for (MonochromePixels mp : pixelArray) {
-				if (mp.getColor().equals(color)) {
-					monochromePixels = mp;
-					break;
+			pixelArray.add(monochromePixels);
+			for (Squad squad : team) {
+				for (Unit unit : squad) {
+					monochromePixels.add(unit.getPlacement().getPosition());
 				}
 			}
-			
-			if (monochromePixels == null) {
-				monochromePixels = new MonochromePixels(color);
-				pixelArray.add(monochromePixels);
-			}
-			
-			monochromePixels.add(position);
 		}
 	}
 	
