@@ -21,6 +21,7 @@ import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -111,6 +112,7 @@ import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
+	private Size size = new Size(50, 50);
 	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
@@ -186,7 +188,6 @@ public class Window extends JFrame {
 
 		Dimension minSize = new Dimension(200, 200);
 		setMinimumSize(minSize);
-		setSize(minSize);
 		setExtendedState(MAXIMIZED_BOTH);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -304,11 +305,81 @@ public class Window extends JFrame {
 		
 		squadTablePanel.setLayout(new GridLayout());
 		
-		//initializeSimulation();
 		setKeyListeners();
+		initializeSimulation();
+	}
+
+	private void initializeSimulation() {
+		Size size = new Size(50, 50);
+		Field<Cell> field = new BattleField(size);
 		
-		tableManager.addTeam(state.getTeams().get(0));
-		tableManager.addTeam(state.getTeams().get(1));
+		Team teamA = new Team();
+		Team teamB = new Team();
+		
+		squadAA = teamA.new Squad();
+		squadBA = teamB.new Squad();
+		
+		squadAA.setColor(new Color(1.f, 0.f, 0.f));
+		squadBA.setColor(new Color(0.f, 1.f, 1.f));
+		
+		teamA.setColor(squadAA.getColor());
+		teamB.setColor(squadBA.getColor());
+		
+		Unit unitAA = squadAA.new Unit(100);
+		Unit unitBA = squadBA.new Unit(100);
+		
+		ArrayList<Placement<Unit>> units = new ArrayList<>();
+		
+		for (int i = 0; i < 40; i++) {
+			MutablePosition position = null;
+			do {
+				position = new MutablePosition((int) (Math.random() * 10),
+											   (int) (Math.random() * 10) + 40);
+			} while (field.get(position).hasUnit());
+			
+			Placement<Unit> newUnit = new Placement<Unit>(unitAA.copy(), position);
+			units.add(newUnit);
+			field.get(position).setUnit(newUnit);
+		}
+		
+		for (int i = 0; i < 40; i++) {
+			MutablePosition position = null;
+			do {
+				position = new MutablePosition((int) (Math.random() * 10) + 40,
+											   (int) (Math.random() * 10));
+			} while (field.get(position).hasUnit());
+			
+			Placement<Unit> newUnit = new Placement<Unit>(unitBA.copy(), position);
+			units.add(newUnit);
+			field.get(position).setUnit(newUnit);
+		}
+		
+		MutablePosition pos = new MutablePosition(19, 19);
+		Placement<Unit> pu = new Placement<Unit>(unitAA, pos);
+		units.add(pu);
+		field.get(pos).setUnit(pu);
+		
+		pos = new MutablePosition(20, 20);
+		pu = new Placement<Unit>(unitBA, pos);
+		units.add(pu);
+		field.get(pos).setUnit(pu);
+
+		ArrayList<Team> teams = new ArrayList<Team>();
+		teams.add(teamA);
+		teams.add(teamB);
+		
+		state = new State(field, teams, units);
+		engine = new Engine(state);
+		
+		for(Team team : state.getTeams()) {
+			tableManager.addTeam(team);
+			for (Squad squad : team) {
+				tableManager.addSquad(squad);
+			}
+		}
+		
+		updatePixelArray(units);
+		glPanel.display();
 	}
 
 	private void setKeyListeners() {
@@ -331,27 +402,9 @@ public class Window extends JFrame {
 					System.out.println("iteraterd");
 					ArrayList<Placement<Unit>> units = state.getUnits();
 					
-//					int t = 0;
-//					
-//					for (Team team : state.getTeams()) {
-//						int size = 0;
-//						int dead = 0;
-//						for (Squad squad : team) {
-//							size += squad.getSize();
-//							dead += squad.getTotal() - size;
-//						}
-//						tableManager.getTeams().getModel().setValueAt(size, t, 3);
-//						tableManager.getTeams().getModel().setValueAt(dead, t, 4);
-//						t++;
-////						System.out.println("team:" + t + "***" + size);
-//					}
-					
 					tableManager.update();
 					updatePixelArray(units);
 					glPanel.display();
-//					System.out.println("Red:  " + squadAA.getSize());
-//					System.out.println("Cyan: " + squadBA.getSize());
-					
 				}
 			}
 		});
@@ -507,79 +560,36 @@ public class Window extends JFrame {
 	}
 	
 	private JComponent createRightSide() {
-		
-		Size size = new Size(50, 50);
-		Field<Cell> field = new BattleField(size);
-		
-		Team teamA = new Team();
-		Team teamB = new Team();
-		
-		squadAA = teamA.new Squad();
-		squadBA = teamB.new Squad();
-		
-		squadAA.setColor(new Color(1.f, 0.f, 0.f));
-		squadBA.setColor(new Color(0.f, 1.f, 1.f));
-		
-		teamA.setColor(squadAA.getColor());
-		teamB.setColor(squadBA.getColor());
-		
-		Unit unitAA = squadAA.new Unit(100);
-		Unit unitBA = squadBA.new Unit(100);
-		
-		ArrayList<Placement<Unit>> units = new ArrayList<>();
-		
-		for (int i = 0; i < 40; i++) {
-			MutablePosition position = null;
-			do {
-				position = new MutablePosition((int) (Math.random() * 10),
-											   (int) (Math.random() * 10) + 40);
-			} while (field.get(position).hasUnit());
-			
-			Placement<Unit> newUnit = new Placement<Unit>(unitAA.copy(), position);
-			units.add(newUnit);
-			field.get(position).setUnit(newUnit);
-		}
-		
-		for (int i = 0; i < 40; i++) {
-			MutablePosition position = null;
-			do {
-				position = new MutablePosition((int) (Math.random() * 10) + 40,
-											   (int) (Math.random() * 10));
-			} while (field.get(position).hasUnit());
-			
-			Placement<Unit> newUnit = new Placement<Unit>(unitBA.copy(), position);
-			units.add(newUnit);
-			field.get(position).setUnit(newUnit);
-		}
-		
-		MutablePosition pos = new MutablePosition(19, 19);
-		Placement<Unit> pu = new Placement<Unit>(unitAA, pos);
-		units.add(pu);
-		field.get(pos).setUnit(pu);
-		
-		pos = new MutablePosition(20, 20);
-		pu = new Placement<Unit>(unitBA, pos);
-		units.add(pu);
-		field.get(pos).setUnit(pu);
-
-		ArrayList<Team> teams = new ArrayList<Team>();
-		teams.add(teamA);
-		teams.add(teamB);
-		
-		for (Squad squad : teamA) {
-			System.out.println("squadsize: " + squad.getSize());
-		}
-		
-		state = new State(field, teams, units);
-		engine = new Engine(state);
-		
 		pixelArray = new ArrayList<>();
-		updatePixelArray(units);
 		
 		GLProfile glProfile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
+		
 		glPanel = new ScaleableGLJPanel(capabilities, pixelArray);
-		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 4),
+		glPanel.setCellPositionListener(new Consumer<Position>() {
+
+			@Override
+			public void accept(Position position) {
+				Cell cell = state.getField().get(position);
+				System.out.println(position);
+				 
+				if (!cell.hasUnit()) {
+					Unit newUnit = squadAA.new Unit(100);
+					MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
+					Placement<Unit> placementUnit = new Placement<Unit>(newUnit, mutablePosition);
+					
+					cell.setUnit(placementUnit);
+					state.getUnits().add(placementUnit);
+					
+					updatePixelArray(state.getUnits());
+					tableManager.update();
+					glPanel.display();
+				}
+			}
+			
+		});
+		
+		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 10),
 							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}

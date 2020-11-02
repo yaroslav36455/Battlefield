@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import javax.swing.JPanel;
 
@@ -16,18 +21,32 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
+import sun.security.ec.point.MutablePoint;
+import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 
 public class ScaleableGLJPanel extends GLJPanel {
 	
 	private ArrayList<MonochromePixels> pixelArray;
 	private float scale;
+	private Consumer<Position> cellPosition = new Consumer<Position>() {
+
+		@Override
+		public void accept(Position position) {
+			System.out.println(position);
+		}
+		
+	};
 	
 	public ScaleableGLJPanel(GLCapabilities capabilities, ArrayList<MonochromePixels> pixelArray) {
 		super(capabilities);
 		this.pixelArray = pixelArray;
 		
 		setListeners();
+	}
+	
+	public void setCellPositionListener(Consumer<Position> cellPosition) {
+		this.cellPosition = cellPosition;
 	}
 	
 	private void setListeners() {
@@ -81,7 +100,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 					Color color = monochromePixels.getColor();
 					gl2.glColor3f(color.getRed() / 255.f,
 							  	  color.getGreen() / 255.f,
-							  	  color.getBlue() / 255);
+							  	  color.getBlue() / 255.f);
 					
 					for (Position pos : monochromePixels) {
 						float x = pos.getX() + 1;
@@ -101,7 +120,66 @@ public class ScaleableGLJPanel extends GLJPanel {
 				gl2.glEnd();
 				
 				System.out.println("end");
-				System.out.println(pixelArray);
+			}
+		});
+		
+		addMouseListener(new MouseListener() {
+			private MutablePosition currentPosition = new MutablePosition();
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				System.out.println("mouseReleased");
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				System.out.println("mousePressed");
+				Point point = e.getPoint();
+				
+				currentPosition.setX((int) (point.getX() / scale));
+				currentPosition.setY(-((int) (point.getY() / scale)) + 49);
+				cellPosition.accept(currentPosition);
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				System.out.println("mouseExited");
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				System.out.println("mouseEntered");
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("mouseClicked");
+			}
+		});
+		
+		addMouseMotionListener(new MouseMotionListener() {
+			private MutablePosition oldPosition = new MutablePosition(Integer.MAX_VALUE, Integer.MAX_VALUE);
+			private MutablePosition currentPosition = new MutablePosition();
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+//				System.out.println("mouseMoved");
+				/* empty */
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+//				Point point = e.getPoint();
+//				
+//				currentPosition.setX((int) (point.getX() / scale));
+//				currentPosition.setY((int) (point.getY() / scale));
+//				
+//				if (!currentPosition.equalTo(oldPosition)) {
+//					oldPosition.setX(currentPosition.getX());
+//					oldPosition.setY(currentPosition.getY());
+//					cellPosition.accept(currentPosition);
+//					System.out.println("mouseDragged");
+//				}
 			}
 		});
 	}

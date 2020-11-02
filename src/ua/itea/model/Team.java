@@ -153,7 +153,6 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			private void add() {
 				units.add(this);
 				size++;
-				System.out.println("Squad: " + Squad.this.getId() + "; size: " + size);
 			}
 		}
 	}
