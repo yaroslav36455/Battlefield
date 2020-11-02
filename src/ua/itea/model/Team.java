@@ -117,16 +117,22 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 		public class Unit {
 			private int id;
 			private float health;
+			private Placement placement;
 			
-			public Unit(float health) {
+			public Unit(float health, Placement placement) {
 				this.id = Squad.this.generateId();
 				this.health = health;
+				this.placement = placement;
 				
 				add();
 			}
 			
 			public int getId() {
 				return id;
+			}
+			
+			public Placement getPlacement() {
+				return placement;
 			}
 			
 			public Squad getSquad() {
@@ -141,8 +147,8 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 				this.health = health;
 			}
 			
-			public Unit copy() {
-				return new Unit(health);
+			public Unit copy(Placement placement) {
+				return new Unit(health, placement);
 			}
 			
 			public void dispose() {

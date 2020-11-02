@@ -8,10 +8,10 @@ import ua.itea.model.Team.Squad.Unit;
 public class State {
 	private Field<Cell> field;
 	private ArrayList<Team> teams;
-	private ArrayList<Placement<Unit>> units;
+	private ArrayList<Unit> units;
 	private boolean hasBeenUpdated;
 	
-	public State(Field<Cell> field, ArrayList<Team> teams, ArrayList<Placement<Unit>> units) {
+	public State(Field<Cell> field, ArrayList<Team> teams, ArrayList<Unit> units) {
 		this.field = field;
 		this.teams = teams;
 		this.units = units;
@@ -68,11 +68,11 @@ public class State {
 		return field;
 	}
 	
-	public ArrayList<Placement<Unit>> getUnits() {
+	public ArrayList<Unit> getUnits() {
 		return units;
 	}
 	
-	public void setUnits(ArrayList<Placement<Unit>> units) {
+	public void setUnits(ArrayList<Unit> units) {
 		this.units = units;
 	}
 	
@@ -80,9 +80,9 @@ public class State {
 //		//TODO
 //	}
 	
-	public void save() {
-		//TODO
-	}
+//	public void save() {
+//		//TODO
+//	}
 	
 	public int numberOfTeams() {
 		return teams.size();

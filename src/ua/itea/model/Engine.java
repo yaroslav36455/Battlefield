@@ -24,8 +24,8 @@ public class Engine {
 //	private Actor actor;
 	
 	private Random random;
-	private ArrayList<Placement<Unit>> base;
-	private ArrayList<Placement<Unit>> turnSequence;
+	private ArrayList<Unit> base;
+	private ArrayList<Unit> turnSequence;
 	private NearbyPositions nearbyPositions;
 	private IsMovementAllowed isMovementAllowed;
 	private IsDestination isDestination;
@@ -55,38 +55,38 @@ public class Engine {
 	public void iterate() {
 		Field<Cell> field = state.getField();
 		
-		ArrayList<Placement<Unit>> tmp = turnSequence;
+		ArrayList<Unit> tmp = turnSequence;
 		turnSequence = base;
 		base = tmp;
 		
 		Collections.shuffle(turnSequence, random);
 		
-		for (Placement<Unit> thisUnit : turnSequence) {
-			Unit unit = thisUnit.get();
+		for (Unit thisUnit : turnSequence) {
+			Unit unit = thisUnit;
 			
 			if (isAlive(unit)) {
-				Placement<Unit> target = null;
+				Unit target = null;
 				
 				/* try hit */
-				target = nearbyTarget(thisUnit.get(), thisUnit.getPosition());
+				target = nearbyTarget(thisUnit, thisUnit.getPlacement().getPosition());
 				if (target != null) {
 					hit(1.f, thisUnit, target);
 				} else {
 					/* find path */
-					isDestination.set(thisUnit.get());
-					ArrayList<CardinalPoints> path = pathFinder.find(thisUnit.getPosition(),
-							thisUnit.get().getSquad().getStats().getVelocity());
+					isDestination.setClient(thisUnit);
+					ArrayList<CardinalPoints> path = pathFinder.find(thisUnit.getPlacement().getPosition(),
+							thisUnit.getSquad().getStats().getVelocity());
 					
 					/* move */
-					field.get(thisUnit.getPosition()).setUnit(null);
+					field.get(thisUnit.getPlacement().getPosition()).setUnit(null);
 					for (CardinalPoints direction : path) {
-						thisUnit.setDirection(direction);
-						thisUnit.getPosition().move(direction);
+						thisUnit.getPlacement().setDirection(direction);
+						thisUnit.getPlacement().getPosition().move(direction);
 					}
-					field.get(thisUnit.getPosition()).setUnit(thisUnit);
+					field.get(thisUnit.getPlacement().getPosition()).setUnit(thisUnit);
 					
 					/* try hit */
-					target = nearbyTarget(thisUnit.get(), thisUnit.getPosition());
+					target = nearbyTarget(thisUnit, thisUnit.getPlacement().getPosition());
 					if (target != null) {
 						hit(2.f, thisUnit, target);
 					}
@@ -94,9 +94,9 @@ public class Engine {
 			}
 		}
 		
-		for (Placement<Unit> placementUnit : turnSequence) {
-			if (isAlive(placementUnit.get())) {
-				base.add(placementUnit);
+		for (Unit unit : turnSequence) {
+			if (isAlive(unit)) {
+				base.add(unit);
 			}
 		}
 		
@@ -131,9 +131,9 @@ public class Engine {
 
 	}
 
-	private Placement<Unit> nearbyTarget(Unit thisUnit, Position position) {
+	private Unit nearbyTarget(Unit thisUnit, Position position) {
 		Field<Cell> field = state.getField();
-		Placement<Unit> target = null;
+		Unit target = null;
 		
 		/* choose random*/
 		nearbyPositions.setPosition(position);
@@ -141,10 +141,10 @@ public class Engine {
 			Position nearbyPosition = nearbyPositions.getPosition(direction);
 			
 			if (field.isWithin(nearbyPosition)) {
-				Placement<Unit> otherUnit = field.get(nearbyPosition).getUnit();
+				Unit otherUnit = field.get(nearbyPosition).getUnit();
 				
-				if (otherUnit != null && isOpponent(thisUnit, otherUnit.get())
-						&& isAlive(otherUnit.get())) {
+				if (otherUnit != null && isOpponent(thisUnit, otherUnit)
+						&& isAlive(otherUnit)) {
 					target = otherUnit;
 					break;
 				}
@@ -154,9 +154,9 @@ public class Engine {
 		return target;
 	}
 
-	private void hit(float damageMod, Placement<Unit> thisUnit, Placement<Unit> opponentUnit) {
-		CardinalPoints direction = thisUnit.getDirection();
-		CardinalPoints opponentDirection = opponentUnit.getDirection();
+	private void hit(float damageMod, Unit thisUnit, Unit opponentUnit) {
+		CardinalPoints direction = thisUnit.getPlacement().getDirection();
+		CardinalPoints opponentDirection = opponentUnit.getPlacement().getDirection();
 		float damage;
 		float defence;
 		float opponentDefenceMod;
@@ -179,21 +179,21 @@ public class Engine {
 		}
 		
 		
-		damage = thisUnit.get().getSquad().getStats().getDamage() * damageMod;
+		damage = thisUnit.getSquad().getStats().getDamage() * damageMod;
 		if (Math.random() < 0.25) {
 			damage *= 1.25;
 		}
 		
-		defence = opponentUnit.get().getSquad().getStats().getDefence() * opponentDefenceMod;
+		defence = opponentUnit.getSquad().getStats().getDefence() * opponentDefenceMod;
 		
-		float opponentHealth = opponentUnit.get().getHealth();
+		float opponentHealth = opponentUnit.getHealth();
 		opponentHealth -= Math.max(damage - defence, 0);
 		
-		opponentUnit.get().setHealth(opponentHealth);
+		opponentUnit.setHealth(opponentHealth);
 		
-		if (!isAlive(opponentUnit.get())) {
-			opponentUnit.get().dispose();
-			state.getField().get(opponentUnit.getPosition()).setUnit(null);
+		if (!isAlive(opponentUnit)) {
+			opponentUnit.dispose();
+			state.getField().get(opponentUnit.getPlacement().getPosition()).setUnit(null);
 		}
 	}
 
@@ -212,8 +212,8 @@ public class Engine {
 		return thisUnitTeam.getId() != otherUnitTeam.getId();
 	}
 	
-	private int getPriority(Placement<Unit> opponent, CardinalPoints direction) {
-		CardinalPoints opponentDirection = opponent.getDirection();
+	private int getPriority(Unit opponent, CardinalPoints direction) {
+		CardinalPoints opponentDirection = opponent.getPlacement().getDirection();
 		int priority = 0;
 		
 		if (opponentDirection == direction.oposite()) {
@@ -236,7 +236,7 @@ public class Engine {
 	private class IsDestination implements Predicate<Position> {
 		private Unit thisUnit;
 		
-		public void set(Unit thisUnit) {
+		public void setClient(Unit thisUnit) {
 			this.thisUnit = thisUnit;
 		}
 

@@ -325,10 +325,13 @@ public class Window extends JFrame {
 		teamA.setColor(squadAA.getColor());
 		teamB.setColor(squadBA.getColor());
 		
-		Unit unitAA = squadAA.new Unit(100);
-		Unit unitBA = squadBA.new Unit(100);
+		Unit unitAA = squadAA.new Unit(100, new Placement(new MutablePosition(19, 19)));
+		Unit unitBA = squadBA.new Unit(100, new Placement(new MutablePosition(20, 20)));
 		
-		ArrayList<Placement<Unit>> units = new ArrayList<>();
+		field.get(unitAA.getPlacement().getPosition()).setUnit(unitAA);
+		field.get(unitBA.getPlacement().getPosition()).setUnit(unitBA);
+		
+		ArrayList<Unit> units = new ArrayList<>();
 		
 		for (int i = 0; i < 40; i++) {
 			MutablePosition position = null;
@@ -337,7 +340,7 @@ public class Window extends JFrame {
 											   (int) (Math.random() * 10) + 40);
 			} while (field.get(position).hasUnit());
 			
-			Placement<Unit> newUnit = new Placement<Unit>(unitAA.copy(), position);
+			Unit newUnit = unitAA.copy(new Placement(position));
 			units.add(newUnit);
 			field.get(position).setUnit(newUnit);
 		}
@@ -349,20 +352,10 @@ public class Window extends JFrame {
 											   (int) (Math.random() * 10));
 			} while (field.get(position).hasUnit());
 			
-			Placement<Unit> newUnit = new Placement<Unit>(unitBA.copy(), position);
+			Unit newUnit = unitBA.copy(new Placement(position));
 			units.add(newUnit);
 			field.get(position).setUnit(newUnit);
 		}
-		
-		MutablePosition pos = new MutablePosition(19, 19);
-		Placement<Unit> pu = new Placement<Unit>(unitAA, pos);
-		units.add(pu);
-		field.get(pos).setUnit(pu);
-		
-		pos = new MutablePosition(20, 20);
-		pu = new Placement<Unit>(unitBA, pos);
-		units.add(pu);
-		field.get(pos).setUnit(pu);
 
 		ArrayList<Team> teams = new ArrayList<Team>();
 		teams.add(teamA);
@@ -400,7 +393,7 @@ public class Window extends JFrame {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					engine.iterate();
 					System.out.println("iteraterd");
-					ArrayList<Placement<Unit>> units = state.getUnits();
+					ArrayList<Unit> units = state.getUnits();
 					
 					tableManager.update();
 					updatePixelArray(units);
@@ -574,12 +567,11 @@ public class Window extends JFrame {
 				System.out.println(position);
 				 
 				if (!cell.hasUnit()) {
-					Unit newUnit = squadAA.new Unit(100);
 					MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
-					Placement<Unit> placementUnit = new Placement<Unit>(newUnit, mutablePosition);
+					Unit newUnit = squadAA.new Unit(100, new Placement(mutablePosition));
 					
-					cell.setUnit(placementUnit);
-					state.getUnits().add(placementUnit);
+					cell.setUnit(newUnit);
+					state.getUnits().add(newUnit);
 					
 					updatePixelArray(state.getUnits());
 					tableManager.update();
@@ -594,12 +586,12 @@ public class Window extends JFrame {
 							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 	
-	private void updatePixelArray(ArrayList<Placement<Unit>> units) {
+	private void updatePixelArray(ArrayList<Unit> units) {
 		pixelArray.clear();
 		
-		for (Placement<Unit> placement : units) {
-			Position position = placement.getPosition();
-			Color color = placement.get().getSquad().getColor();
+		for (Unit unit : units) {
+			Position position = unit.getPlacement().getPosition();
+			Color color = unit.getSquad().getColor();
 			MonochromePixels monochromePixels = null;
 			
 			for (MonochromePixels mp : pixelArray) {

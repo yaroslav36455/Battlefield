@@ -4,10 +4,10 @@ import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.environment.Environment;
 
 public class Cell {
-	private Placement<Unit> unit;
+	private Unit unit;
 	private Environment env;
 	
-	public Cell(Environment env, Placement<Unit> unit) {
+	public Cell(Environment env, Unit unit) {
 		this.env = env;
 		this.unit = unit;
 	}
@@ -20,11 +20,11 @@ public class Cell {
 		return unit != null;
 	}
 	
-	public Placement<Unit> getUnit() {
+	public Unit getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Placement<Unit> unit) {
+	public void setUnit(Unit unit) {
 		this.unit = unit;
 	}
 
