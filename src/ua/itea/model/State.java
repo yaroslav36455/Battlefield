@@ -8,13 +8,11 @@ import ua.itea.model.Team.Squad.Unit;
 public class State {
 	private Field<Cell> field;
 	private ArrayList<Team> teams;
-	private ArrayList<Unit> units;
 	private boolean hasBeenUpdated;
 	
-	public State(Field<Cell> field, ArrayList<Team> teams, ArrayList<Unit> units) {
+	public State(Field<Cell> field, ArrayList<Team> teams) {
 		this.field = field;
 		this.teams = teams;
-		this.units = units;
 	}
 	
 	public boolean hasBeenUpdated() {
@@ -66,14 +64,6 @@ public class State {
 	
 	public Field<Cell> getField() {
 		return field;
-	}
-	
-	public ArrayList<Unit> getUnits() {
-		return units;
-	}
-	
-	public void setUnits(ArrayList<Unit> units) {
-		this.units = units;
 	}
 	
 //	public static State load() {

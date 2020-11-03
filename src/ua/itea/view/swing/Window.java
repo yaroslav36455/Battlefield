@@ -270,8 +270,6 @@ public class Window extends JFrame {
 		field.get(unitAA.getPlacement().getPosition()).setUnit(unitAA);
 		field.get(unitBA.getPlacement().getPosition()).setUnit(unitBA);
 		
-		ArrayList<Unit> units = new ArrayList<>();
-		
 		for (int i = 0; i < 40; i++) {
 			MutablePosition position = null;
 			do {
@@ -280,7 +278,6 @@ public class Window extends JFrame {
 			} while (field.get(position).hasUnit());
 			
 			Unit newUnit = unitAA.copy(new Placement(position));
-			units.add(newUnit);
 			field.get(position).setUnit(newUnit);
 		}
 		
@@ -292,7 +289,6 @@ public class Window extends JFrame {
 			} while (field.get(position).hasUnit());
 			
 			Unit newUnit = unitBA.copy(new Placement(position));
-			units.add(newUnit);
 			field.get(position).setUnit(newUnit);
 		}
 
@@ -300,7 +296,7 @@ public class Window extends JFrame {
 		teams.add(teamA);
 		teams.add(teamB);
 		
-		state = new State(field, teams, units);
+		state = new State(field, teams);
 		engine = new Engine(state);
 		
 		for(Team team : state.getTeams()) {
@@ -511,24 +507,11 @@ public class Window extends JFrame {
 						Unit newUnit = selectedSquad.new Unit(100, new Placement(mutablePosition));
 						
 						cell.setUnit(newUnit);
-						state.getUnits().add(newUnit);
-						
-						System.out.println(selectedSquad.getColor());
-						System.out.println(selectedSquad.getTeam().getId());
 						
 					} else if (!isAdding && cell.hasUnit()) {
 						Unit unit = cell.getUnit();
 						
 						if (selectedSquad.equalTo(unit.getSquad())) {
-							
-							ArrayList<Unit> units = state.getUnits();
-							for(int i = 0; i < units.size(); i++) {
-								if (units.get(i).equalTo(unit)) {
-									units.remove(i);
-									break;
-								}
-							}
-							
 							unit.dispose();
 							cell.setUnit(null);
 						}; 

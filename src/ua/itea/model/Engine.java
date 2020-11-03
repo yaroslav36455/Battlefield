@@ -17,9 +17,12 @@ public class Engine {
 //	private Actor actor;
 	
 	private Random random;
-	private ArrayList<Unit> base;
-	private ArrayList<Unit> turnSequence;
+//	private ArrayList<Unit> base;
+//	private ArrayList<Unit> turnSequence;
 	private NearbyPositions nearbyPositions;
+	
+	private ArrayList<Team> teams;
+	private ArrayList<Unit> units;
 	
 	private IsMovementAllowed isMovementAllowed;
 	private IsDestination isDestination;
@@ -28,9 +31,8 @@ public class Engine {
 		this.state = state;
 	
 		random = new Random(LocalTime.now().toNanoOfDay());
-		
-		base = state.getUnits();
-		turnSequence = new ArrayList<>(base.size());
+		this.teams = state.getTeams();
+		units = new ArrayList<>();
 		
 		isMovementAllowed = new IsMovementAllowed();
 		isDestination = new IsDestination();
@@ -49,13 +51,17 @@ public class Engine {
 	public void iterate() {
 		Field<Cell> field = state.getField();
 		
-		ArrayList<Unit> tmp = turnSequence;
-		turnSequence = base;
-		base = tmp;
+		for (Team team : teams) {
+			for (Team.Squad squad : team) {
+				for (Unit unit : squad) {
+					units.add(unit);
+				}
+			}
+		}
 		
-		Collections.shuffle(turnSequence, random);
+		Collections.shuffle(units, random);
 		
-		for (Unit thisUnit : turnSequence) {
+		for (Unit thisUnit : units) {
 			Unit unit = thisUnit;
 			
 			if (isAlive(unit)) {
@@ -88,14 +94,7 @@ public class Engine {
 			}
 		}
 		
-		for (Unit unit : turnSequence) {
-			if (isAlive(unit)) {
-				base.add(unit);
-			}
-		}
-		
-		turnSequence.clear();
-		state.setUnits(base);
+		units.clear();
 		
 		/*
 		 * Team id
