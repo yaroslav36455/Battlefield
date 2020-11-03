@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
@@ -24,6 +25,7 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableModel;
 
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
@@ -48,6 +50,9 @@ public class Window extends JFrame {
 	private Engine engine;
 	private Squad squadAA;
 	private Squad squadBA;
+	
+	private Squad selectedSquad;
+	private boolean isAdding;
 //	
 //	private JButton loadButton;
 //	private JButton saveButton;
@@ -216,6 +221,8 @@ public class Window extends JFrame {
 						editSquad.setEnabled(true);
 						createUnits.setEnabled(true);
 						removeUnits.setEnabled(true);
+						
+						selectedSquad = tableManager.getSelectedSquad();
 					}
 				},
 				new Consumer<TableRow>() {
@@ -227,6 +234,8 @@ public class Window extends JFrame {
 						editSquad.setEnabled(false);
 						createUnits.setEnabled(false);
 						removeUnits.setEnabled(false);
+						
+						selectedSquad = null;
 					}
 				});
 		
@@ -422,6 +431,7 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("unimplemented createAddUnitsButton()");
+				isAdding = true;
 			}
 		});
 		
@@ -436,6 +446,7 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("unimplemented createRemoveUnitsButton()");
+				isAdding = false;
 			}
 		});
 		
@@ -493,14 +504,35 @@ public class Window extends JFrame {
 			@Override
 			public void accept(Position position) {
 				Cell cell = state.getField().get(position);
-				System.out.println(position);
-				 
-				if (!cell.hasUnit()) {
-					MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
-					Unit newUnit = squadAA.new Unit(100, new Placement(mutablePosition));
-					
-					cell.setUnit(newUnit);
-					state.getUnits().add(newUnit);
+				
+				if (selectedSquad != null) {
+					if (isAdding && !cell.hasUnit()) {
+						MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
+						Unit newUnit = selectedSquad.new Unit(100, new Placement(mutablePosition));
+						
+						cell.setUnit(newUnit);
+						state.getUnits().add(newUnit);
+						
+						System.out.println(selectedSquad.getColor());
+						System.out.println(selectedSquad.getTeam().getId());
+						
+					} else if (!isAdding && cell.hasUnit()) {
+						Unit unit = cell.getUnit();
+						
+						if (selectedSquad.equalTo(unit.getSquad())) {
+							
+							ArrayList<Unit> units = state.getUnits();
+							for(int i = 0; i < units.size(); i++) {
+								if (units.get(i).equalTo(unit)) {
+									units.remove(i);
+									break;
+								}
+							}
+							
+							unit.dispose();
+							cell.setUnit(null);
+						}; 
+					}
 					
 					updatePixelArray(state.getTeams());
 					tableManager.update();

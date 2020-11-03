@@ -87,7 +87,7 @@ public class TableManager {
 		int teamSelectedRow = teams.getSelectedRow();
 		int squadSelectedRow = squads.get(teamSelectedRow).getSelectedRow();
 		
-		FormationTable squadTable = squads.get(squadSelectedRow);
+		FormationTable squadTable = squads.get(teamSelectedRow);
 		
 		return ((SquadTableRow) squadTable.getRow(squadSelectedRow)).getSquad();
 	}

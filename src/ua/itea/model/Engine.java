@@ -1,21 +1,14 @@
 package ua.itea.model;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 
-import ua.itea.model.Team.Squad;
 import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.CardinalPoints;
-import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
-import ua.itea.model.util.Size;
 
 public class Engine {
 	private State state;
@@ -27,6 +20,7 @@ public class Engine {
 	private ArrayList<Unit> base;
 	private ArrayList<Unit> turnSequence;
 	private NearbyPositions nearbyPositions;
+	
 	private IsMovementAllowed isMovementAllowed;
 	private IsDestination isDestination;
 	

@@ -3,6 +3,7 @@ package ua.itea.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class Team extends Formation implements Iterable<Team.Squad> {
@@ -71,7 +72,7 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			return stats;
 		}
 		
-		public void removeAllUnits() {
+		public void disposeAllUnits() {
 			for (int i = 0; i < units.size(); i++) {
 				units.set(i, null);
 			}
@@ -86,6 +87,11 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 		
 		public int getTotal() {
 			return units.size();
+		}
+		
+		public boolean equalTo(Squad squad) {
+			return Team.this.equalTo(squad.getTeam())
+					&& getId() == squad.getId();
 		}
 
 		@Override
@@ -160,6 +166,11 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			private void add() {
 				units.add(this);
 				size++;
+			}
+			
+			public boolean equalTo(Unit unit) {
+				return Squad.this.equalTo(unit.getSquad())
+						&& getId() == unit.getId();
 			}
 		}
 	}
