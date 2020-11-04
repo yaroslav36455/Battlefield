@@ -12,7 +12,6 @@ import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 
 public class TableManager {	
-	private State state;
 	private FormationTable teams;
 	private ArrayList<FormationTable> squads;
 	private Consumer<FormationTable> teamRowSelection;
@@ -20,12 +19,10 @@ public class TableManager {
 	private Consumer<TableRow> squadRowSelection;
 	private Consumer<TableRow> squadRowUnselection;
 	
-	public TableManager(State state,
-						Consumer<FormationTable> teamRowSelection,
+	public TableManager(Consumer<FormationTable> teamRowSelection,
 						Consumer<FormationTable> teamRowUnselection,
 						Consumer<TableRow> squadRowSelection,
 						Consumer<TableRow> squadRowUnselection) {
-		this.state = state;
 		this.teams = createTeamTable();
 		this.squads = new ArrayList<>();
 		this.teamRowSelection = teamRowSelection;

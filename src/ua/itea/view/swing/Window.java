@@ -136,7 +136,7 @@ public class Window extends JFrame {
 				}
 	         });
 		
-		tableManager = new TableManager(null,
+		tableManager = new TableManager(
 				new Consumer<FormationTable>() {
 					/* team row selection */
 			
