@@ -35,7 +35,8 @@ public class TableManager {
 		teams.update();
 		
 		int selectedTeamRow = teams.getSelectedRow(); 
-		
+		System.out.println("selected teamRow " + selectedTeamRow);
+			
 		if (selectedTeamRow != -1) {
 			squads.get(selectedTeamRow).update();
 		}
@@ -60,8 +61,9 @@ public class TableManager {
 	
 	public Squad removeSquad() {
 		FormationTable squadTable = squads.get(teams.getSelectedRow());
-		
-		return (Squad) squadTable.removeRow(squadTable.getSelectedRow());
+		TableRow tableRow = squadTable.removeRow(squadTable.getSelectedRow());
+				
+		return ((SquadTableRow) tableRow).getSquad();
 	}
 	
 	public void addTeam(Team team) {
@@ -69,11 +71,13 @@ public class TableManager {
 		teams.add(new TeamTableRow(team));
 	}
 	
-	public void removeTeam() {
+	public Team removeTeam() {
 		int index = teams.getSelectedRow();
+		TableRow tableRow = teams.removeRow(index);
 		
-		teams.removeRow(index);
 		squads.remove(index);
+		
+		return ((TeamTableRow) tableRow).getTeam();
 	}
 	
 	public Team getSelectedTeam() {
@@ -132,9 +136,11 @@ public class TableManager {
 		
 		private void unselect() {
 			if (value.isSelected()) {
+				System.out.println("selected: " + value);
 				teamRowUnselection.accept(squads.get(value.getValue()));
 			}
 			value.unselect();
+			System.out.println("selected: " + value);
 		}
 		
 		private void select(int index) {

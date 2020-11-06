@@ -1,6 +1,5 @@
 package ua.itea.view.swing;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
@@ -20,7 +19,6 @@ public class FormationTableModel extends AbstractTableModel {
 	}
 	
 	public void update() {
-		/* TODO: +1 ??? */
 		fireTableRowsUpdated(0, ordinaryRows.size() + 1);
 	}
 	

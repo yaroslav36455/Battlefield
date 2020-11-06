@@ -264,12 +264,6 @@ public class Window extends JFrame {
 		teamA.setColor(squadAA.getColor());
 		teamB.setColor(squadBA.getColor());
 		
-		Unit unitAA = squadAA.new Unit(100, new Placement(new MutablePosition(19, 19)));
-		Unit unitBA = squadBA.new Unit(100, new Placement(new MutablePosition(20, 20)));
-		
-		field.get(unitAA.getPlacement().getPosition()).setUnit(unitAA);
-		field.get(unitBA.getPlacement().getPosition()).setUnit(unitBA);
-		
 		for (int i = 0; i < 40; i++) {
 			MutablePosition position = null;
 			do {
@@ -277,7 +271,7 @@ public class Window extends JFrame {
 											   (int) (Math.random() * 10) + 40);
 			} while (field.get(position).hasUnit());
 			
-			Unit newUnit = unitAA.copy(new Placement(position));
+			Unit newUnit = squadAA.new Unit(100, new Placement(position));
 			field.get(position).setUnit(newUnit);
 		}
 		
@@ -288,7 +282,7 @@ public class Window extends JFrame {
 											   (int) (Math.random() * 10));
 			} while (field.get(position).hasUnit());
 			
-			Unit newUnit = unitBA.copy(new Placement(position));
+			Unit newUnit = squadAA.new Unit(100, new Placement(position));
 			field.get(position).setUnit(newUnit);
 		}
 
@@ -349,7 +343,13 @@ public class Window extends JFrame {
 //				addTeamDialog = new AddTeamDialog(thisWindow, "Add Team");
 //				addTeamDialog.refresh("Text #22", new Color((int) (Math.random() * Integer.MAX_VALUE)));
 				
-				tableManager.addTeam(new Team());
+				Team newTeam = new Team();
+				
+				state.getTeams().add(newTeam);
+				tableManager.addTeam(newTeam);
+				
+				updatePixelArray(state.getTeams());
+				glPanel.display();
 			}
 		});
 		
@@ -363,7 +363,20 @@ public class Window extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tableManager.removeTeam();
+				Field<Cell> field = state.getField();
+				Team team = tableManager.removeTeam();
+				
+				for (Squad squad : team) {
+					for (Unit unit : squad) {
+						field.get(unit.getPlacement().getPosition()).setUnit(null);
+					}
+					squad.disposeAllUnits();
+				}
+				team.removeAllSquads();
+				
+				tableManager.update();
+				updatePixelArray(state.getTeams());
+				glPanel.display();
 			}
 		});
 		
@@ -397,8 +410,18 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Team team = tableManager.getSelectedTeam();
 				Squad squad = tableManager.removeSquad();
+				Field<Cell> field = state.getField();
 				
+				for (Unit unit : squad) {
+					field.get(unit.getPlacement().getPosition()).setUnit(null);
+				}
+				
+				squad.disposeAllUnits();
 				team.removeSquad(squad);
+				
+				tableManager.update();
+				updatePixelArray(state.getTeams());
+				glPanel.display();
 			}
 		});
 		

@@ -21,7 +21,6 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
-import sun.security.ec.point.MutablePoint;
 import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 
@@ -42,6 +41,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 		super(capabilities);
 		this.pixelArray = pixelArray;
 		
+		setFocusable(false);
 		setListeners();
 	}
 	
@@ -60,7 +60,6 @@ public class ScaleableGLJPanel extends GLJPanel {
 			
 			@Override
 			public void init(GLAutoDrawable drawable) {
-				setFocusable(false);
 				
 				GL2 gl2 = drawable.getGL().getGL2();
 				drawable.getGL().setSwapInterval(1);
@@ -82,7 +81,6 @@ public class ScaleableGLJPanel extends GLJPanel {
 			
 			@Override
 			public void dispose(GLAutoDrawable drawable) {
-				// TODO Auto-generated method stub
 				
 			}
 			

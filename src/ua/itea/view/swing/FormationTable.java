@@ -89,6 +89,10 @@ public class FormationTable extends JTable {
 		return getRowCount() - 1;
 	}
 	
+	public boolean isOrdinaryRow(int index) {
+		return index >= 0 && index <= getLastOrdinaryRowIndex();
+	}
+	
 	public int getLastOrdinaryRowIndex() {
 		return getTotalRowIndex() - 1;
 	}

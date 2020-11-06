@@ -11,7 +11,7 @@ import javax.swing.table.TableCellRenderer;
 
 public class TableIntegerCellRenderer implements TableCellRenderer {
 	
-	private JLabel label;
+	private JLabel label; 
 	private Font bold;
 	private Font regular;
 
