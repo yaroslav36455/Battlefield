@@ -11,7 +11,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
@@ -25,7 +24,6 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.TableModel;
 
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
@@ -44,7 +42,6 @@ import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
-//	private Size size = new Size(50, 50);
 	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;

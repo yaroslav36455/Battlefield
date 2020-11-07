@@ -169,8 +169,12 @@ public class ScaleableGLJPanel extends GLJPanel {
 				Point point = e.getPoint();
 				
 				currentPosition.setX((int) (point.getX() / scale));
-				currentPosition.setY(-((int) (point.getY() / scale)) + 49);
-				cellPosition.accept(currentPosition);
+				currentPosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
+				
+				if (currentPosition.getX() >= 0 && currentPosition.getX() < fieldWidth
+						&& currentPosition.getY() >= 0 && currentPosition.getY() < fieldHeight) {
+					cellPosition.accept(currentPosition);
+				}
 			}
 		});
 	}
