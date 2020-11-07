@@ -93,6 +93,10 @@ public class TableManager {
 		return ((SquadTableRow) squadTable.getRow(squadSelectedRow)).getSquad();
 	}
 	
+	public boolean isSelectedSquad() {
+		return squads.get(teams.getSelectedRow()).getSelectedRow() != -1;
+	}
+	
 	private FormationTable createTeamTable() {
 		FormationTable newTable =  new FormationTable();
 		

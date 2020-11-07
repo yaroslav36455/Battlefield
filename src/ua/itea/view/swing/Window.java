@@ -176,6 +176,10 @@ public class Window extends JFrame {
 //						leftSide.repaint();
 						
 						System.out.println("selection count " + squadTablePanel.getComponentCount());
+						
+						if (tableManager.isSelectedSquad()) {
+							selectedSquad = tableManager.getSelectedSquad();
+						}
 					}
 				},
 				new Consumer<FormationTable>() {
@@ -448,7 +452,6 @@ public class Window extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("unimplemented createAddUnitsButton()");
 				isAdding = true;
 			}
 		});
@@ -463,7 +466,6 @@ public class Window extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("unimplemented createRemoveUnitsButton()");
 				isAdding = false;
 			}
 		});
@@ -556,10 +558,13 @@ public class Window extends JFrame {
 		pixelArray.clear();
 		
 		for (Team team : teams) {
-			MonochromePixels monochromePixels = new MonochromePixels(team.getColor());
+//			MonochromePixels monochromePixels = new MonochromePixels(team.getColor());
+//			pixelArray.add(monochromePixels);
 			
-			pixelArray.add(monochromePixels);
 			for (Squad squad : team) {
+				MonochromePixels monochromePixels = new MonochromePixels(squad.getColor());
+				pixelArray.add(monochromePixels);
+				
 				for (Unit unit : squad) {
 					monochromePixels.add(unit.getPlacement().getPosition());
 				}
