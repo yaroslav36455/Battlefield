@@ -126,6 +126,7 @@ public class TableManager {
 					int index = lsm.getMinSelectionIndex();
 					
 					if (teams.getTotalRowIndex() == index) {
+//						lsm.clearSelection();
 						unselect();	
 					} else {
 						select(index);	
@@ -177,6 +178,7 @@ public class TableManager {
 					int index = lsm.getMinSelectionIndex();
 					
 					if (table.getTotalRowIndex() == index) {
+//						lsm.clearSelection();
 						unselect();	
 					} else {
 						select(index);	

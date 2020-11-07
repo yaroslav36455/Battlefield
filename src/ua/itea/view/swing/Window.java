@@ -133,8 +133,8 @@ public class Window extends JFrame {
 			public void windowClosing( WindowEvent windowevent ) {
 				dispose();
 				System.exit(0);
-				}
-	         });
+			}
+	    });
 		
 		tableManager = new TableManager(
 				new Consumer<FormationTable>() {
@@ -282,7 +282,7 @@ public class Window extends JFrame {
 											   (int) (Math.random() * 10));
 			} while (field.get(position).hasUnit());
 			
-			Unit newUnit = squadAA.new Unit(100, new Placement(position));
+			Unit newUnit = squadBA.new Unit(100, new Placement(position));
 			field.get(position).setUnit(newUnit);
 		}
 
@@ -321,13 +321,12 @@ public class Window extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					engine.iterate();
-					System.out.println("iteraterd");
 					
 					tableManager.update();
 					updatePixelArray(state.getTeams());
 					glPanel.display();
 				}
-			}
+			} 
 		});
 	}
 

@@ -57,16 +57,32 @@ public class FormationTable extends JTable {
 	}
 	
 	public TableRow removeRow(int index) {
+		System.out.println("remove Row");
+		System.out.println("selection " + index);
 		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
 		TableRow row = tableModel.removeRow(index);
 		
 		if (index < getTotalRowIndex()) {
-			setRowSelectionInterval(index, index);	
-		} else if (index > 0) {
-			index--;
 			setRowSelectionInterval(index, index);
+		} else {
+			if (index > 0) {
+				index--;
+				setRowSelectionInterval(index, index);
+			} else {
+				removeRowSelectionInterval(index, index);	
+			}
 		}
+		
+//		if (index > 0 && index < getTotalRowIndex()) {
+//			index--;
+//			setRowSelectionInterval(index, index);
+//		} else if (index < getTotalRowIndex()) {
+//			setRowSelectionInterval(index, index);	
+//		} else if (index >= getTotalRowIndex()) {
+//			removeRowSelectionInterval(index, index);
+//		}
+		System.out.println("new selection " + index);
 		
 		return row;
 	}
