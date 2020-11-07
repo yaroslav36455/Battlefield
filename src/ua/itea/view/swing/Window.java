@@ -14,12 +14,18 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -102,7 +108,6 @@ public class Window extends JFrame {
 
 		leftSide = createLeftSide();
 		rightSide = createRightSide();
-		leftSide.setBorder(new TitledBorder("Organization"));
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 								   leftSide, rightSide);
@@ -478,10 +483,16 @@ public class Window extends JFrame {
 	}
 	
 	private JComponent createLeftSide() {
+		JPanel panel = new JPanel();
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 											  teamPanel, squadPanel);
 		splitPane.setOneTouchExpandable(true);
-		return splitPane;
+		splitPane.setBorder(new TitledBorder("Organization"));
+		
+		panel.setLayout(new BorderLayout());
+		panel.add(splitPane);
+		panel.add(new MenuBar(), BorderLayout.NORTH);
+		return panel;
 	}
 	
 	private JPanel createTeamTablePanel() {
@@ -612,3 +623,4 @@ public class Window extends JFrame {
 //		
 //	}
 }
+
