@@ -27,6 +27,8 @@ import ua.itea.model.util.Position;
 public class ScaleableGLJPanel extends GLJPanel {
 	
 	private ArrayList<MonochromePixels> pixelArray;
+	private int fieldWidth;
+	private int fieldHeight;
 	private float scale;
 	private Consumer<Position> cellPosition = new Consumer<Position>() {
 
@@ -60,7 +62,6 @@ public class ScaleableGLJPanel extends GLJPanel {
 			
 			@Override
 			public void init(GLAutoDrawable drawable) {
-				
 				GL2 gl2 = drawable.getGL().getGL2();
 				drawable.getGL().setSwapInterval(1);
 				gl2.glClearColor(0.0f, 0.2f, 0.3f, 1.0f);
@@ -75,8 +76,8 @@ public class ScaleableGLJPanel extends GLJPanel {
 		        gl2.glMatrixMode(GL2.GL_MODELVIEW);
 		        gl2.glLoadIdentity();
 
-		        gl2.glViewport(0, 0, (int) (drawable.getSurfaceWidth() * scale),
-		        					 (int) (drawable.getSurfaceHeight() * scale));
+//		        gl2.glViewport(0, 0, (int) (drawable.getSurfaceWidth()),
+//		        					 (int) (drawable.getSurfaceHeight()));
 			}
 			
 			@Override
@@ -89,7 +90,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 				GL2 gl2 = drawable.getGL().getGL2();
 				
 				gl2.glClear(GL.GL_COLOR_BUFFER_BIT);
-				System.out.println("display(...)");
+//				System.out.println("display(...)");
 				
 				gl2.glLoadIdentity();
 				gl2.glBegin(GL.GL_TRIANGLES);
@@ -117,7 +118,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 				
 				gl2.glEnd();
 				
-				System.out.println("end");
+//				System.out.println("end");
 			}
 		});
 		
@@ -135,7 +136,7 @@ public class ScaleableGLJPanel extends GLJPanel {
 				Point point = e.getPoint();
 				
 				currentPosition.setX((int) (point.getX() / scale));
-				currentPosition.setY(-((int) (point.getY() / scale)) + 49);
+				currentPosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
 				cellPosition.accept(currentPosition);
 			}
 			
@@ -156,28 +157,20 @@ public class ScaleableGLJPanel extends GLJPanel {
 		});
 		
 		addMouseMotionListener(new MouseMotionListener() {
-			private MutablePosition oldPosition = new MutablePosition(Integer.MAX_VALUE, Integer.MAX_VALUE);
 			private MutablePosition currentPosition = new MutablePosition();
 			
 			@Override
 			public void mouseMoved(MouseEvent e) {
 //				System.out.println("mouseMoved");
-				/* empty */
 			}
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-//				Point point = e.getPoint();
-//				
-//				currentPosition.setX((int) (point.getX() / scale));
-//				currentPosition.setY((int) (point.getY() / scale));
-//				
-//				if (!currentPosition.equalTo(oldPosition)) {
-//					oldPosition.setX(currentPosition.getX());
-//					oldPosition.setY(currentPosition.getY());
-//					cellPosition.accept(currentPosition);
-//					System.out.println("mouseDragged");
-//				}
+				Point point = e.getPoint();
+				
+				currentPosition.setX((int) (point.getX() / scale));
+				currentPosition.setY(-((int) (point.getY() / scale)) + 49);
+				cellPosition.accept(currentPosition);
 			}
 		});
 	}
@@ -186,6 +179,8 @@ public class ScaleableGLJPanel extends GLJPanel {
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc = new GridBagConstraints();
 		
+		this.fieldWidth = width;
+		this.fieldHeight = height;
 		this.scale = scale;
 		setPreferredSize(new Dimension((int) (width * scale), (int) (height * scale)));
 

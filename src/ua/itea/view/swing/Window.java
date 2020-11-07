@@ -44,7 +44,7 @@ import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
-	private Size size = new Size(50, 50);
+//	private Size size = new Size(50, 50);
 	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
@@ -82,6 +82,8 @@ public class Window extends JFrame {
 
 	public Window() {
 		super("Battlefield");
+		
+		initializeSimulation();
 	
 		JSplitPane splitPane;
 		JComponent leftSide;
@@ -136,112 +138,14 @@ public class Window extends JFrame {
 			}
 	    });
 		
-		tableManager = new TableManager(
-				new Consumer<FormationTable>() {
-					/* team row selection */
-			
-					@Override
-					public void accept(FormationTable squadTable) {
-						removeTeam.setEnabled(true);
-						createSquad.setEnabled(true);
-						if (squadTable.isSelectedOrdinaryRow()) {
-							removeSquad.setEnabled(true);
-						} else {
-							removeSquad.setEnabled(false);
-						}
-						
-						squadTablePanel.removeAll();
-//						squadTablePanel.remove(currentSquadScrollPane);
-//						currentSquadScrollPane = squadTable.makeScrollable();
-						squadTablePanel.add(squadTable.makeScrollable());
-						
-//						squadTable.setVisible(true);
-//						squadTable.revalidate();
-//						squadTable.repaint();
-						
-//						currentSquadScrollPane.setVisible(true);
-//						currentSquadScrollPane.revalidate();
-//						currentSquadScrollPane.repaint();
-						
-//						squadTablePanel.setVisible(true);
-//						squadTablePanel.revalidate();
-//						squadTablePanel.repaint();
-						
-						squadPanel.setVisible(true);
-						squadPanel.revalidate();
-						squadPanel.repaint();
-						
-//						leftSide.setVisible(true);
-//						leftSide.revalidate();
-//						leftSide.repaint();
-						
-						System.out.println("selection count " + squadTablePanel.getComponentCount());
-						
-						if (tableManager.isSelectedSquad()) {
-							selectedSquad = tableManager.getSelectedSquad();
-						}
-					}
-				},
-				new Consumer<FormationTable>() {
-					/* team row unselection */
-					
-					@Override
-					public void accept(FormationTable squadTable) {
-						removeTeam.setEnabled(false);
-						createSquad.setEnabled(false);
-						
-						squadTablePanel.removeAll();
-//						squadTablePanel.remove(currentSquadScrollPane);
-						
-//						squadTable.setVisible(false);
-//						squadTable.revalidate();
-//						squadTable.repaint();
-						
-//						currentSquadScrollPane.setVisible(false);
-//						currentSquadScrollPane.revalidate();
-//						currentSquadScrollPane.repaint();
-						
-//						squadTablePanel.setVisible(false);
-//						squadTablePanel.revalidate();
-//						squadTablePanel.repaint();
-						
-						squadPanel.setVisible(false);
-						squadPanel.revalidate();
-						squadPanel.repaint();
-						
-//						leftSide.setVisible(false);
-//						leftSide.revalidate();
-//						leftSide.repaint();
-						
-						System.out.println("unselection count " + squadTablePanel.getComponentCount());
-					}
-				},
-				new Consumer<TableRow>() {
-					/* squad row selection */
-
-					@Override
-					public void accept(TableRow squadRow) {
-						removeSquad.setEnabled(true);
-						editSquad.setEnabled(true);
-						createUnits.setEnabled(true);
-						removeUnits.setEnabled(true);
-						
-						selectedSquad = tableManager.getSelectedSquad();
-					}
-				},
-				new Consumer<TableRow>() {
-					/* squad row unselection */
-					
-					@Override
-					public void accept(TableRow squadRow) {
-						removeSquad.setEnabled(false);
-						editSquad.setEnabled(false);
-						createUnits.setEnabled(false);
-						removeUnits.setEnabled(false);
-						
-						selectedSquad = null;
-					}
-				});
+		tableManager = createTableManager();
+		
+		for(Team team : state.getTeams()) {
+			tableManager.addTeam(team);
+			for (Squad squad : team) {
+				tableManager.addSquad(squad);
+			}
+		}
 		
 		teamTablePanel.setLayout(new GridLayout());
 		teamTablePanel.add(tableManager.getTeams().makeScrollable());
@@ -249,7 +153,9 @@ public class Window extends JFrame {
 		squadTablePanel.setLayout(new GridLayout());
 		
 		setKeyListeners();
-		initializeSimulation();
+		
+		updatePixelArray(state.getTeams());
+		glPanel.display();
 	}
 
 	private void initializeSimulation() {
@@ -296,16 +202,117 @@ public class Window extends JFrame {
 		
 		state = new State(field, teams);
 		engine = new Engine(state);
+	}
+	
+	private TableManager createTableManager() {
+		TableManager newTableManager = new TableManager(
+				new Consumer<FormationTable>() {
+					/* team row selection */
+			
+					@Override
+					public void accept(FormationTable squadTable) {
+						removeTeam.setEnabled(true);
+						createSquad.setEnabled(true);
+						if (squadTable.isSelectedOrdinaryRow()) {
+							removeSquad.setEnabled(true);
+						} else {
+							removeSquad.setEnabled(false);
+						}
+						
+						squadTablePanel.removeAll();
+//						squadTablePanel.remove(currentSquadScrollPane);
+//						currentSquadScrollPane = squadTable.makeScrollable();
+						squadTablePanel.add(squadTable.makeScrollable());
+						
+//						squadTable.setVisible(true);
+//						squadTable.revalidate();
+//						squadTable.repaint();
+						
+//						currentSquadScrollPane.setVisible(true);
+//						currentSquadScrollPane.revalidate();
+//						currentSquadScrollPane.repaint();
+						
+//						squadTablePanel.setVisible(true);
+//						squadTablePanel.revalidate();
+//						squadTablePanel.repaint();
+						
+						squadPanel.setVisible(true);
+						squadPanel.revalidate();
+						squadPanel.repaint();
+						
+//						leftSide.setVisible(true);
+//						leftSide.revalidate();
+//						leftSide.repaint();
+						
+//						System.out.println("selection count " + squadTablePanel.getComponentCount());
+						
+						if (tableManager.isSelectedSquad()) {
+							selectedSquad = tableManager.getSelectedSquad();
+						}
+					}
+				},
+				new Consumer<FormationTable>() {
+					/* team row unselection */
+					
+					@Override
+					public void accept(FormationTable squadTable) {
+						removeTeam.setEnabled(false);
+						createSquad.setEnabled(false);
+						
+						squadTablePanel.removeAll();
+//						squadTablePanel.remove(currentSquadScrollPane);
+						
+//						squadTable.setVisible(false);
+//						squadTable.revalidate();
+//						squadTable.repaint();
+						
+//						currentSquadScrollPane.setVisible(false);
+//						currentSquadScrollPane.revalidate();
+//						currentSquadScrollPane.repaint();
+						
+//						squadTablePanel.setVisible(false);
+//						squadTablePanel.revalidate();
+//						squadTablePanel.repaint();
+						
+						squadPanel.setVisible(false);
+						squadPanel.revalidate();
+						squadPanel.repaint();
+						
+//						leftSide.setVisible(false);
+//						leftSide.revalidate();
+//						leftSide.repaint();
+						
+//						System.out.println("unselection count " + squadTablePanel.getComponentCount());
+					}
+				},
+				new Consumer<TableRow>() {
+					/* squad row selection */
+
+					@Override
+					public void accept(TableRow squadRow) {
+						removeSquad.setEnabled(true);
+						editSquad.setEnabled(true);
+						createUnits.setEnabled(true);
+						removeUnits.setEnabled(true);
+						
+						selectedSquad = tableManager.getSelectedSquad();
+					}
+				},
+				new Consumer<TableRow>() {
+					/* squad row unselection */
+					
+					@Override
+					public void accept(TableRow squadRow) {
+						removeSquad.setEnabled(false);
+						editSquad.setEnabled(false);
+						createUnits.setEnabled(false);
+						removeUnits.setEnabled(false);
+						
+						selectedSquad = null;
+					}
+				});
 		
-		for(Team team : state.getTeams()) {
-			tableManager.addTeam(team);
-			for (Squad squad : team) {
-				tableManager.addSquad(squad);
-			}
-		}
-		
-		updatePixelArray(state.getTeams());
-		glPanel.display();
+		return newTableManager;
 	}
 
 	private void setKeyListeners() {
@@ -548,6 +555,8 @@ public class Window extends JFrame {
 			}
 			
 		});
+		
+		Size size = state.getField().getSize();
 		
 		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 10),
 							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
