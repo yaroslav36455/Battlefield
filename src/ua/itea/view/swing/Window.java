@@ -134,9 +134,8 @@ public class Window extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			
 			@Override
-			public void windowClosing( WindowEvent windowevent ) {
+			public void windowClosing(WindowEvent windowevent) {
 				dispose();
-				System.exit(0);
 			}
 	    });
 		
