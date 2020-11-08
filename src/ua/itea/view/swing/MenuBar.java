@@ -1,13 +1,16 @@
 package ua.itea.view.swing;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
 public class MenuBar extends JMenuBar {
-	private JMenu mainMenu;
+	private Menu menu;
 	
 	public MenuBar() {
-		mainMenu = new Menu();
-		add(mainMenu);
+		menu = new Menu();
+		add(menu);
+	}
+	
+	public Menu getMenu() {
+		return menu;
 	}
 }

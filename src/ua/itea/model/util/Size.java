@@ -39,6 +39,9 @@ public class Size {
 		Size other = (Size) obj;
 		return height == other.height && width == other.width;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "Size [width=" + width + ", height=" + height + "]";
+	}
 }

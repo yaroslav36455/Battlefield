@@ -1,5 +1,6 @@
 package ua.itea.view.swing;
 
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ButtonGroup;
@@ -9,14 +10,20 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
 public class Menu extends JMenu {
+	private JMenuItem createField;
+	private JMenuItem removeField;
+	private JRadioButtonMenuItem useTeamColors;
+	private JRadioButtonMenuItem useSquadColors;
+	private JMenuItem exit;
+	
 	public Menu() {
 		super("Menu");
 		
-		JMenuItem createField = new JMenuItem("Create field...");
-		JMenuItem removeField = new JMenuItem("Remove field");
-		JRadioButtonMenuItem useTeamColors = new JRadioButtonMenuItem("Use team colors");
-		JRadioButtonMenuItem useSquadColors = new JRadioButtonMenuItem("Use squad colors");
-		JMenuItem exit = new JMenuItem("Exit");
+		createField = new JMenuItem("Create field...");
+		removeField = new JMenuItem("Remove field");
+		useTeamColors = new JRadioButtonMenuItem("Use team colors");
+		useSquadColors = new JRadioButtonMenuItem("Use squad colors");
+		exit = new JMenuItem("Exit");
 		
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(useTeamColors);
@@ -38,5 +45,25 @@ public class Menu extends JMenu {
 		add(useSquadColors);
 		add(new JSeparator());
 		add(exit);
+	}
+	
+	public void addCreateFieldListener(ActionListener newListener) {
+		createField.addActionListener(newListener);
+	}
+	
+	public void addRemoveFieldListener(ActionListener newListener) {
+		removeField.addActionListener(newListener);
+	}
+	
+	public void addUseTeamColorsListener(ActionListener newListener) {
+		useTeamColors.addActionListener(newListener);
+	}
+	
+	public void addUseSquadColorsListener(ActionListener newListener) {
+		useSquadColors.addActionListener(newListener);
+	}
+	
+	public void addExitListeners(ActionListener newListener) {
+		exit.addActionListener(newListener);
 	}
 }

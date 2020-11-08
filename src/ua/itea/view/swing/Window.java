@@ -2,6 +2,7 @@ package ua.itea.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -490,10 +491,31 @@ public class Window extends JFrame {
 		
 		panel.setLayout(new BorderLayout());
 		panel.add(splitPane);
-		panel.add(new MenuBar(), BorderLayout.NORTH);
+		panel.add(createMenuBar(), BorderLayout.NORTH);
 		return panel;
 	}
 	
+	private MenuBar createMenuBar() {
+		Window thisWindow = this;
+		MenuBar menuBar = new MenuBar();
+		Menu menu = menuBar.getMenu();
+		
+		menu.addCreateFieldListener(new ActionListener() {
+			private RequestSizeDialog requestSizeDialog;
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (requestSizeDialog == null) {
+					requestSizeDialog = new RequestSizeDialog(thisWindow);
+					requestSizeDialog.setSizeConsumer(System.out::println);
+				}
+				requestSizeDialog.setVisible(true);
+			}
+		});
+		
+		return menuBar;
+	}
+
 	private JPanel createTeamTablePanel() {
 		JPanel panel = createTablePanel(createTeam, removeTeam);
 		teamTablePanel = new JPanel();
