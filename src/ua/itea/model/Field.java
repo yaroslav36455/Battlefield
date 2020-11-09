@@ -24,7 +24,7 @@ public abstract class Field<T> {
 	}
 	
 	public void resize(Size size) {
-		if (!size.equals(size)) {
+		if (!this.size.equals(size)) {
 			setSize(size);
 		}
 	}
