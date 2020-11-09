@@ -83,7 +83,7 @@ public class Window extends JFrame {
 	private ScaleableGLJPanel glPanel;
 	private JComponent viewport;
 	
-	private JSplitPane tablesPanel;
+	private JSplitPane orgPanel;
 	
 	private JComponent leftSide;
 	private JComponent rightSide;
@@ -423,16 +423,16 @@ public class Window extends JFrame {
 	
 	private JComponent createLeftSide() {
 		JPanel panel = new JPanel();
-		tablesPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+		orgPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				  					 teamPanel, squadPanel);
-		tablesPanel.setOneTouchExpandable(true);
-		tablesPanel.setBorder(new TitledBorder("Organization"));
+		orgPanel.setOneTouchExpandable(true);
+		orgPanel.setBorder(new TitledBorder("Organization"));
 		
 		panel.setLayout(new BorderLayout());
 		panel.add(createMenuBar(), BorderLayout.NORTH);
-		panel.add(tablesPanel);
+		panel.add(orgPanel);
 		
-		tablesPanel.setVisible(false);
+		orgPanel.setVisible(false);
 		return panel;
 	}
 	
@@ -488,8 +488,8 @@ public class Window extends JFrame {
 	
 	private void placeOrganizationPanel() {
 		teamTablePanel.add(tableManager.getTeams().makeScrollable());
-		tablesPanel.setVisible(true);
-		tablesPanel.revalidate();
+		orgPanel.setVisible(true);
+		orgPanel.revalidate();
 	}
 
 //	private void hideOrganizationPanel() {
