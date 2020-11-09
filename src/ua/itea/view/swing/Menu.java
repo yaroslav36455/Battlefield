@@ -66,4 +66,14 @@ public class Menu extends JMenu {
 	public void addExitListeners(ActionListener newListener) {
 		exit.addActionListener(newListener);
 	}
+	
+	public void setCreatingSuccess() {
+		createField.setEnabled(false);
+		removeField.setEnabled(true);
+	}
+	
+	public void setRemovingSuccess() {
+		createField.setEnabled(true);
+		removeField.setEnabled(false);
+	}
 }

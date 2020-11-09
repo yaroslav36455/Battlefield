@@ -1,8 +1,6 @@
 package ua.itea.view.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -15,18 +13,12 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -87,6 +79,8 @@ public class Window extends JFrame {
 	
 	private JComponent leftSide;
 	private JComponent rightSide;
+	
+	private Menu menu;
 
 	public Window() {
 		super("Battlefield");
@@ -161,31 +155,10 @@ public class Window extends JFrame {
 						}
 						
 						squadTablePanel.removeAll();
-//						squadTablePanel.remove(currentSquadScrollPane);
-//						currentSquadScrollPane = squadTable.makeScrollable();
-						squadTablePanel.add(squadTable.makeScrollable());
-						
-//						squadTable.setVisible(true);
-//						squadTable.revalidate();
-//						squadTable.repaint();
-						
-//						currentSquadScrollPane.setVisible(true);
-//						currentSquadScrollPane.revalidate();
-//						currentSquadScrollPane.repaint();
-						
-//						squadTablePanel.setVisible(true);
-//						squadTablePanel.revalidate();
+						squadTablePanel.revalidate();
 //						squadTablePanel.repaint();
-						
-						squadPanel.setVisible(true);
-						squadPanel.revalidate();
-						squadPanel.repaint();
-						
-//						leftSide.setVisible(true);
-//						leftSide.revalidate();
-//						leftSide.repaint();
-						
-//						System.out.println("selection count " + squadTablePanel.getComponentCount());
+
+						squadTablePanel.add(squadTable.makeScrollable());
 						
 						if (tableManager.isSelectedSquad()) {
 							selectedSquad = tableManager.getSelectedSquad();
@@ -201,29 +174,8 @@ public class Window extends JFrame {
 						createSquad.setEnabled(false);
 						
 						squadTablePanel.removeAll();
-//						squadTablePanel.remove(currentSquadScrollPane);
-						
-//						squadTable.setVisible(false);
-//						squadTable.revalidate();
-//						squadTable.repaint();
-						
-//						currentSquadScrollPane.setVisible(false);
-//						currentSquadScrollPane.revalidate();
-//						currentSquadScrollPane.repaint();
-						
-//						squadTablePanel.setVisible(false);
 //						squadTablePanel.revalidate();
-//						squadTablePanel.repaint();
-						
-						squadPanel.setVisible(false);
-						squadPanel.revalidate();
-						squadPanel.repaint();
-						
-//						leftSide.setVisible(false);
-//						leftSide.revalidate();
-//						leftSide.repaint();
-						
-//						System.out.println("unselection count " + squadTablePanel.getComponentCount());
+						squadTablePanel.repaint();
 					}
 				},
 				new Consumer<TableRow>() {
@@ -445,7 +397,7 @@ public class Window extends JFrame {
 	
 	private MenuBar createMenuBar() {
 		MenuBar menuBar = new MenuBar();
-		Menu menu = menuBar.getMenu();
+		menu = menuBar.getMenu();
 		
 		menu.addCreateFieldListener(new ActionListener() {
 			private RequestSizeDialog requestSizeDialog;
@@ -460,6 +412,8 @@ public class Window extends JFrame {
 			}
 		});
 		
+		menu.addRemoveFieldListener(e->removeSimulation());
+		
 		return menuBar;
 	}
 	
@@ -468,13 +422,14 @@ public class Window extends JFrame {
 			state = new State(new BattleField(fieldSize), new ArrayList<>());
 			engine = new Engine(state);
 			tableManager = createTableManager();
+			
+			teamTablePanel.add(tableManager.getTeams().makeScrollable());
 		} else {
 			state.getField().resize(fieldSize);
-			state.getTeams().clear();
-			tableManager.clear();
 		}
 		
 		placePanels(fieldSize);
+		menu.setCreatingSuccess();
 	}
 	
 	private void placePanels(Size fieldSize) {
@@ -482,28 +437,34 @@ public class Window extends JFrame {
 		placeOrganizationPanel();
 	}
 	
-//	private void hidePanels() {
-//		
-//	}
-	
 	private void placeOrganizationPanel() {
-		teamTablePanel.add(tableManager.getTeams().makeScrollable());
 		orgPanel.setVisible(true);
 		orgPanel.revalidate();
 	}
 
-//	private void hideOrganizationPanel() {
-//		tablesPanel.setVisible(false);
-//	}
-
 	private void placeViewportPanel(Size size) {
 		viewport = new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 10),
-				   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				   				   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				   				   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		rightSide.add(viewport);
-		rightSide.setVisible(true);
 		rightSide.revalidate();
 	}
+	
+	private void removeSimulation() {
+		state.getTeams().clear();
+		tableManager.clear();
+		
+		orgPanel.setVisible(false);
+		
+		rightSide.removeAll();
+		rightSide.repaint();
+		
+		viewport = null;
+		
+		updatePixelArray(state.getTeams());
+		glPanel.display();
+		menu.setRemovingSuccess();
+	} 
 
 	private JPanel createTeamTablePanel() {
 		JPanel panel = createTablePanel(createTeam, removeTeam);
