@@ -52,8 +52,6 @@ public class Window extends JFrame {
 	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
-	private Squad squadAA;
-	private Squad squadBA;
 	
 	private Squad selectedSquad;
 	private boolean isAdding;
@@ -83,15 +81,17 @@ public class Window extends JFrame {
 	private JButton removeUnits;
 	
 	private ScaleableGLJPanel glPanel;
+	private JComponent viewport;
+	
+	private JSplitPane tablesPanel;
+	
+	private JComponent leftSide;
+	private JComponent rightSide;
 
 	public Window() {
 		super("Battlefield");
-		
-		initializeSimulation();
 	
 		JSplitPane splitPane;
-		JComponent leftSide;
-		JComponent rightSide;
 		JPanel statusPanel;
 		JLabel statusLabel;
 		
@@ -106,7 +106,9 @@ public class Window extends JFrame {
 		removeUnits = createRemoveUnitsButton();
 		teamPanel = createTeamTablePanel();
 		squadPanel = createSquadTablePanel();
-
+		
+		glPanel = createGLPanel();
+		
 		leftSide = createLeftSide();
 		rightSide = createRightSide();
 
@@ -140,70 +142,7 @@ public class Window extends JFrame {
 			}
 	    });
 		
-		tableManager = createTableManager();
-		
-		for(Team team : state.getTeams()) {
-			tableManager.addTeam(team);
-			for (Squad squad : team) {
-				tableManager.addSquad(squad);
-			}
-		}
-		
-		teamTablePanel.setLayout(new GridLayout());
-		teamTablePanel.add(tableManager.getTeams().makeScrollable());
-		
-		squadTablePanel.setLayout(new GridLayout());
-		
 		setKeyListeners();
-		
-		updatePixelArray(state.getTeams());
-		glPanel.display();
-	}
-
-	private void initializeSimulation() {
-		Size size = new Size(50, 50);
-		Field<Cell> field = new BattleField(size);
-		
-		Team teamA = new Team();
-		Team teamB = new Team();
-		
-		squadAA = teamA.new Squad();
-		squadBA = teamB.new Squad();
-		
-		squadAA.setColor(new Color(1.f, 0.f, 0.f));
-		squadBA.setColor(new Color(0.f, 1.f, 1.f));
-		
-		teamA.setColor(squadAA.getColor());
-		teamB.setColor(squadBA.getColor());
-		
-		for (int i = 0; i < 40; i++) {
-			MutablePosition position = null;
-			do {
-				position = new MutablePosition((int) (Math.random() * 10),
-											   (int) (Math.random() * 10) + 40);
-			} while (field.get(position).hasUnit());
-			
-			Unit newUnit = squadAA.new Unit(100, new Placement(position));
-			field.get(position).setUnit(newUnit);
-		}
-		
-		for (int i = 0; i < 40; i++) {
-			MutablePosition position = null;
-			do {
-				position = new MutablePosition((int) (Math.random() * 10) + 40,
-											   (int) (Math.random() * 10));
-			} while (field.get(position).hasUnit());
-			
-			Unit newUnit = squadBA.new Unit(100, new Placement(position));
-			field.get(position).setUnit(newUnit);
-		}
-
-		ArrayList<Team> teams = new ArrayList<Team>();
-		teams.add(teamA);
-		teams.add(teamB);
-		
-		state = new State(field, teams);
-		engine = new Engine(state);
 	}
 	
 	private TableManager createTableManager() {
@@ -484,19 +423,27 @@ public class Window extends JFrame {
 	
 	private JComponent createLeftSide() {
 		JPanel panel = new JPanel();
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-											  teamPanel, squadPanel);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setBorder(new TitledBorder("Organization"));
+		tablesPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				  					 teamPanel, squadPanel);
+		tablesPanel.setOneTouchExpandable(true);
+		tablesPanel.setBorder(new TitledBorder("Organization"));
 		
 		panel.setLayout(new BorderLayout());
-		panel.add(splitPane);
 		panel.add(createMenuBar(), BorderLayout.NORTH);
+		panel.add(tablesPanel);
+		
+		tablesPanel.setVisible(false);
+		return panel;
+	}
+	
+	private JComponent createRightSide() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout());
+		
 		return panel;
 	}
 	
 	private MenuBar createMenuBar() {
-		Window thisWindow = this;
 		MenuBar menuBar = new MenuBar();
 		Menu menu = menuBar.getMenu();
 		
@@ -506,8 +453,8 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (requestSizeDialog == null) {
-					requestSizeDialog = new RequestSizeDialog(thisWindow);
-					requestSizeDialog.setSizeConsumer(System.out::println);
+					requestSizeDialog = new RequestSizeDialog(Window.this);
+					requestSizeDialog.setSizeConsumer(Window.this::createSimulation);
 				}
 				requestSizeDialog.setVisible(true);
 			}
@@ -515,10 +462,54 @@ public class Window extends JFrame {
 		
 		return menuBar;
 	}
+	
+	private void createSimulation(Size fieldSize) {
+		if (state == null || engine == null || tableManager == null) {
+			state = new State(new BattleField(fieldSize), new ArrayList<>());
+			engine = new Engine(state);
+			tableManager = createTableManager();
+		} else {
+			state.getField().resize(fieldSize);
+			state.getTeams().clear();
+			tableManager.clear();
+		}
+		
+		placePanels(fieldSize);
+	}
+	
+	private void placePanels(Size fieldSize) {
+		placeViewportPanel(fieldSize);
+		placeOrganizationPanel();
+	}
+	
+//	private void hidePanels() {
+//		
+//	}
+	
+	private void placeOrganizationPanel() {
+		teamTablePanel.add(tableManager.getTeams().makeScrollable());
+		tablesPanel.setVisible(true);
+		tablesPanel.revalidate();
+	}
+
+//	private void hideOrganizationPanel() {
+//		tablesPanel.setVisible(false);
+//	}
+
+	private void placeViewportPanel(Size size) {
+		viewport = new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 10),
+				   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		rightSide.add(viewport);
+		rightSide.setVisible(true);
+		rightSide.revalidate();
+	}
 
 	private JPanel createTeamTablePanel() {
 		JPanel panel = createTablePanel(createTeam, removeTeam);
 		teamTablePanel = new JPanel();
+		teamTablePanel.setLayout(new GridLayout());
+		
 		panel.add(teamTablePanel);
 		
 		return panel;
@@ -528,6 +519,8 @@ public class Window extends JFrame {
 		JPanel panel = createTablePanel(createSquad, removeSquad, editSquad,
 									    createUnits, removeUnits);
 		squadTablePanel = new JPanel();
+		squadTablePanel.setLayout(new GridLayout());
+		
 		panel.add(squadTablePanel);
 		
 		return panel;
@@ -548,7 +541,7 @@ public class Window extends JFrame {
 		return panel;
 	}
 	
-	private JComponent createRightSide() {
+	private ScaleableGLJPanel createGLPanel() {
 		pixelArray = new ArrayList<>();
 		
 		GLProfile glProfile = GLProfile.getDefault();
@@ -585,11 +578,7 @@ public class Window extends JFrame {
 			
 		});
 		
-		Size size = state.getField().getSize();
-		
-		return new JScrollPane(glPanel.makeViewport(size.getWidth(), size.getHeight(), 10),
-							   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-							   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		return glPanel;
 	}
 	
 	private void updatePixelArray(ArrayList<Team> teams) {
@@ -609,39 +598,5 @@ public class Window extends JFrame {
 			}
 		}
 	}
-	
-//	private class ColorChooser extends JColorChooser {
-//
-//		public ColorChooser(Color color) {
-//			super(color);
-//		}
-//	}
-//
-//	private class MainMenuPanel extends JPanel {
-//		private JButton newBattle;
-//		private JButton loadBattle;
-//		private JButton saveBattle;
-//		private JButton endBattle;
-//	}
-//
-//	private class CreateFieldPanel extends JPanel {
-//		private JButton createField;
-//		private JLabel widthLabel;
-//		private JLabel heightLabel;
-//		private JTextField widthTextField;
-//		private JTextField heightTextField;
-//
-//		public CreateFieldPanel() {
-//			createField = new JButton("Create");
-//		}
-//	}
-//
-//	private class TeamModifierPane extends JPanel {
-//
-//	}
-//
-//	private class StatePane extends JPanel {
-//		
-//	}
 }
 

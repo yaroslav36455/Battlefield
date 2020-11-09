@@ -1,9 +1,6 @@
 package ua.itea.view.swing;
 
-import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
@@ -41,7 +38,8 @@ public class RequestSizeDialog extends JDialog {
 		add(cancelButton);
 		
 		pack();
-		setLocationByPlatform(true);
+		setResizable(false);
+		setLocationRelativeTo(null);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
 		setButtonActionListeners();
@@ -84,8 +82,8 @@ public class RequestSizeDialog extends JDialog {
 
 	@Override
 	public void setVisible(boolean b) {
-		widthTextField.setText("");
-		heightTextField.setText("");
+		widthTextField.setText("50");
+		heightTextField.setText("50");
 		super.setVisible(b);
 	}
 }

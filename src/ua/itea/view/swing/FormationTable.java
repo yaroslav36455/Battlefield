@@ -57,8 +57,6 @@ public class FormationTable extends JTable {
 	}
 	
 	public TableRow removeRow(int index) {
-		System.out.println("remove Row");
-		System.out.println("selection " + index);
 		FormationTableModel tableModel = (FormationTableModel) getModel();
 		
 		TableRow row = tableModel.removeRow(index);
@@ -73,16 +71,6 @@ public class FormationTable extends JTable {
 				removeRowSelectionInterval(index, index);	
 			}
 		}
-		
-//		if (index > 0 && index < getTotalRowIndex()) {
-//			index--;
-//			setRowSelectionInterval(index, index);
-//		} else if (index < getTotalRowIndex()) {
-//			setRowSelectionInterval(index, index);	
-//		} else if (index >= getTotalRowIndex()) {
-//			removeRowSelectionInterval(index, index);
-//		}
-		System.out.println("new selection " + index);
 		
 		return row;
 	}
@@ -120,6 +108,10 @@ public class FormationTable extends JTable {
 	public boolean isSelectedOrdinaryRow() {
 		int index = getSelectedRow();
 		return index != -1 && index != getTotalRowIndex();
+	}
+	
+	public void clear() {
+		((FormationTableModel) getModel()).clear();
 	}
 	
 	public JPanel makeScrollable() {

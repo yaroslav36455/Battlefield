@@ -35,7 +35,6 @@ public class TableManager {
 		teams.update();
 		
 		int selectedTeamRow = teams.getSelectedRow(); 
-//		System.out.println("selected teamRow " + selectedTeamRow);
 			
 		if (selectedTeamRow != -1) {
 			squads.get(selectedTeamRow).update();
@@ -74,10 +73,17 @@ public class TableManager {
 	public Team removeTeam() {
 		int index = teams.getSelectedRow();
 		TableRow tableRow = teams.removeRow(index);
-		
+
 		squads.remove(index);
 		
 		return ((TeamTableRow) tableRow).getTeam();
+	}
+	
+	public void clear() {
+		teams.clear();
+		for (FormationTable squad : squads) {
+			squad.clear();
+		}
 	}
 	
 	public Team getSelectedTeam() {

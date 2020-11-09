@@ -43,6 +43,11 @@ public class FormationTableModel extends AbstractTableModel {
 		return row;
 	}
 	
+	public void clear() {
+		ordinaryRows.clear();
+		update();
+	}
+	
 	@Override
 	public int getRowCount() {
 		return ordinaryRows.size() + 1;
