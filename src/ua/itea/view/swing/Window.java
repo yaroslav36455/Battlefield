@@ -435,7 +435,7 @@ public class Window extends JFrame {
 	
 	private void placeOrganizationPanel() {
 		orgPanel.setVisible(true);
-		orgPanel.revalidate();
+		orgPanel.getParent().validate();
 	}
 
 	private void placeViewportPanel(Size size) {
@@ -443,7 +443,7 @@ public class Window extends JFrame {
 				   				   JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				   				   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		rightSide.add(viewport);
-		rightSide.revalidate();
+		rightSide.validate();
 	}
 	
 	private void removeSimulation() {
