@@ -40,7 +40,7 @@ public class DisplacementField extends Field<DisplacementCell> {
 	}
 
 	@Override
-	protected DisplacementCell[][] realloc(Size size) {
+	protected DisplacementCell[][] alloc(Size size) {
 		DisplacementCell[][] field = new DisplacementCell[size.getWidth()][size.getHeight()];
 		
 		refresh();

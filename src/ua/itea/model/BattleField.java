@@ -9,7 +9,7 @@ public class BattleField extends Field<Cell> {
 	}
 
 	@Override
-	protected Cell[][] realloc(Size size) {
+	protected Cell[][] alloc(Size size) {
 		Cell[][] field = new Cell[size.getWidth()][size.getHeight()];
 		
 		for (int r = 0; r < field.length; r++) {

@@ -233,19 +233,24 @@ public class Window extends JFrame {
 			} 
 		});
 	}
+	
+	private void resetEnabledButtons() {
+		createTeam.setEnabled(true);
+		removeTeam.setEnabled(false);
+		createSquad.setEnabled(false);;
+		removeSquad.setEnabled(false);;
+		editSquad.setEnabled(false);;
+		createUnits.setEnabled(false);;
+		removeUnits.setEnabled(false);;
+	}
 
 	private JButton createAddTeamButton() {
-		JFrame thisWindow = this;
 		JButton button = new JButton("Add Team");
 		
-		button.setEnabled(true);
 		button.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				addTeamDialog = new AddTeamDialog(thisWindow, "Add Team");
-//				addTeamDialog.refresh("Text #22", new Color((int) (Math.random() * Integer.MAX_VALUE)));
-				
 				Team newTeam = new Team();
 				
 				state.getTeams().add(newTeam);
@@ -262,7 +267,6 @@ public class Window extends JFrame {
 	private JButton createRemoveTeamButton() {
 		JButton button = new JButton("Remove Team");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -289,7 +293,6 @@ public class Window extends JFrame {
 	private JButton createAddSquadButton() {
 		JButton button = new JButton("Add Squad");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			
 			@Override
@@ -307,7 +310,6 @@ public class Window extends JFrame {
 	private JButton createRemoveSquadButton() {
 		JButton button = new JButton("Remove Squad");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -334,7 +336,6 @@ public class Window extends JFrame {
 	private JButton createEditSquadButton() {
 		JButton button = new JButton("Edit Squad");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -348,7 +349,6 @@ public class Window extends JFrame {
 	private JButton createAddUnitsButton() {
 		JButton button = new JButton("Add Units");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -362,7 +362,6 @@ public class Window extends JFrame {
 	private JButton createRemoveUnitsButton() {
 		JButton button = new JButton("Remove Units");
 		
-		button.setEnabled(false);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -418,15 +417,11 @@ public class Window extends JFrame {
 	}
 	
 	private void createSimulation(Size fieldSize) {
-		if (state == null || engine == null || tableManager == null) {
-			state = new State(new BattleField(fieldSize), new ArrayList<>());
-			engine = new Engine(state);
-			tableManager = createTableManager();
-			
-			teamTablePanel.add(tableManager.getTeams().makeScrollable());
-		} else {
-			state.getField().resize(fieldSize);
-		}
+		state = new State(new BattleField(fieldSize), new ArrayList<>());
+		engine = new Engine(state);
+		
+		tableManager = createTableManager();
+		teamTablePanel.add(tableManager.getTeams().makeScrollable());
 		
 		placePanels(fieldSize);
 		menu.setCreatingSuccess();
@@ -435,6 +430,7 @@ public class Window extends JFrame {
 	private void placePanels(Size fieldSize) {
 		placeViewportPanel(fieldSize);
 		placeOrganizationPanel();
+		resetEnabledButtons();
 	}
 	
 	private void placeOrganizationPanel() {
@@ -460,6 +456,9 @@ public class Window extends JFrame {
 		rightSide.repaint();
 		
 		viewport = null;
+		
+		teamTablePanel.removeAll();
+		squadTablePanel.removeAll();
 		
 		updatePixelArray(state.getTeams());
 		glPanel.display();

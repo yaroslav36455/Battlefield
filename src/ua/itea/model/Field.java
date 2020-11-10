@@ -8,7 +8,8 @@ public abstract class Field<T> {
 	private T[][] field;
 	
 	public Field(Size size) {
-		setSize(size);
+		this.size = size;
+		field = alloc(size);
 	}
 	
 	public boolean isWithin(Position position) {
@@ -23,18 +24,7 @@ public abstract class Field<T> {
 		return size;
 	}
 	
-	public void resize(Size size) {
-		if (!this.size.equals(size)) {
-			setSize(size);
-		}
-	}
-	
-	private void setSize(Size size) {
-		this.size = size;
-		field = realloc(size);
-	}
-	
-	protected abstract T[][] realloc(Size size);
+	protected abstract T[][] alloc(Size size);
 	
 	public T get(Position pos) {
 		return get(pos.getX(), pos.getY());
