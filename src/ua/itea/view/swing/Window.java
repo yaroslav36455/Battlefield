@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -228,8 +227,7 @@ public class Window extends JFrame {
 					engine.iterate();
 					
 					tableManager.update();
-					updatePixelArray(state.getTeams());
-					glPanel.display();
+					redraw();
 				}
 			} 
 		});
@@ -257,8 +255,7 @@ public class Window extends JFrame {
 				state.getTeams().add(newTeam);
 				tableManager.addTeam(newTeam);
 				
-				updatePixelArray(state.getTeams());
-				glPanel.display();
+				redraw();
 			}
 		});
 		
@@ -283,8 +280,7 @@ public class Window extends JFrame {
 				team.removeAllSquads();
 				
 				tableManager.update();
-				updatePixelArray(state.getTeams());
-				glPanel.display();
+				redraw();
 			}
 		});
 		
@@ -326,8 +322,7 @@ public class Window extends JFrame {
 				team.removeSquad(squad);
 				
 				tableManager.update();
-				updatePixelArray(state.getTeams());
-				glPanel.display();
+				redraw();
 			}
 		});
 		
@@ -414,23 +409,8 @@ public class Window extends JFrame {
 		
 		menu.addRemoveFieldListener(e->removeSimulation());
 		
-		menu.addUseTeamColorsListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updatePixelArray(state.getTeams());
-				glPanel.display();
-			}
-		});
-		
-		menu.addUseSquadColorsListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updatePixelArray(state.getTeams());
-				glPanel.display();
-			}
-		});
+		menu.addUseTeamColorsListener(e->redraw());
+		menu.addUseSquadColorsListener(e->redraw());
 		
 		menu.addExitListeners(new ActionListener() {
 			
@@ -487,9 +467,8 @@ public class Window extends JFrame {
 		teamTablePanel.removeAll();
 		squadTablePanel.removeAll();
 		
-		updatePixelArray(state.getTeams());
-		glPanel.display();
 		menu.setRemovingSuccess();
+		redraw();
 	} 
 
 	private JPanel createTeamTablePanel() {
@@ -558,14 +537,18 @@ public class Window extends JFrame {
 					}
 					
 					tableManager.update();
-					updatePixelArray(state.getTeams());
-					glPanel.display();
+					redraw();
 				}
 			}
 			
 		});
 		
 		return glPanel;
+	}
+	
+	private void redraw() {
+		updatePixelArray(state.getTeams());
+		glPanel.display();
 	}
 	
 	private void updatePixelArray(ArrayList<Team> teams) {
