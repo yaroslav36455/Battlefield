@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -375,7 +376,7 @@ public class Window extends JFrame {
 	private JComponent createLeftSide() {
 		JPanel panel = new JPanel();
 		orgPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				  					 teamPanel, squadPanel);
+				  				  teamPanel, squadPanel);
 		orgPanel.setOneTouchExpandable(true);
 		orgPanel.setBorder(new TitledBorder("Organization"));
 		
@@ -412,6 +413,14 @@ public class Window extends JFrame {
 		});
 		
 		menu.addRemoveFieldListener(e->removeSimulation());
+		
+		menu.addExitListeners(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Window.this.dispatchEvent(new WindowEvent(Window.this, WindowEvent.WINDOW_CLOSING));
+			}
+		});
 		
 		return menuBar;
 	}
