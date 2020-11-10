@@ -1,5 +1,6 @@
 package ua.itea.view.swing;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
@@ -29,15 +30,6 @@ public class Menu extends JMenu {
 		buttonGroup.add(useTeamColors);
 		buttonGroup.add(useSquadColors);
 		
-		removeField.setEnabled(false);
-		useTeamColors.setEnabled(false);
-		useSquadColors.setEnabled(false);
-		
-		setMnemonic(KeyEvent.VK_M);
-		createField.setMnemonic(KeyEvent.VK_C);
-		removeField.setMnemonic(KeyEvent.VK_R);
-		exit.setMnemonic(KeyEvent.VK_X);
-		
 		add(createField);
 		add(removeField);
 		add(new JSeparator());
@@ -45,6 +37,47 @@ public class Menu extends JMenu {
 		add(useSquadColors);
 		add(new JSeparator());
 		add(exit);
+		
+		setState();
+		setListeners();
+		setMnemonics();
+	}
+	
+	private void setState() {
+		createField.setEnabled(true);
+		removeField.setEnabled(false);
+		useTeamColors.setEnabled(false);
+		useSquadColors.setEnabled(false);
+		
+		useTeamColors.setSelected(true);
+	}
+	
+	private void setListeners() {
+		createField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				useTeamColors.setEnabled(true);
+				useSquadColors.setEnabled(true);
+			}
+		});
+		
+		removeField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				useTeamColors.setEnabled(false);
+				useSquadColors.setEnabled(false);
+				
+			}
+		});
+	}
+
+	private void setMnemonics() {
+		setMnemonic(KeyEvent.VK_M);
+		createField.setMnemonic(KeyEvent.VK_C);
+		removeField.setMnemonic(KeyEvent.VK_R);
+		exit.setMnemonic(KeyEvent.VK_X);
 	}
 	
 	public void addCreateFieldListener(ActionListener newListener) {
@@ -75,5 +108,9 @@ public class Menu extends JMenu {
 	public void setRemovingSuccess() {
 		createField.setEnabled(true);
 		removeField.setEnabled(false);
+	}
+	
+	public boolean isTeamColors() {
+		return useTeamColors.isSelected();
 	}
 }

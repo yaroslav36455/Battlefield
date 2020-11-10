@@ -414,6 +414,24 @@ public class Window extends JFrame {
 		
 		menu.addRemoveFieldListener(e->removeSimulation());
 		
+		menu.addUseTeamColorsListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePixelArray(state.getTeams());
+				glPanel.display();
+			}
+		});
+		
+		menu.addUseSquadColorsListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePixelArray(state.getTeams());
+				glPanel.display();
+			}
+		});
+		
 		menu.addExitListeners(new ActionListener() {
 			
 			@Override
@@ -539,8 +557,8 @@ public class Window extends JFrame {
 						}; 
 					}
 					
-					updatePixelArray(state.getTeams());
 					tableManager.update();
+					updatePixelArray(state.getTeams());
 					glPanel.display();
 				}
 			}
@@ -553,16 +571,27 @@ public class Window extends JFrame {
 	private void updatePixelArray(ArrayList<Team> teams) {
 		pixelArray.clear();
 		
-		for (Team team : teams) {
-//			MonochromePixels monochromePixels = new MonochromePixels(team.getColor());
-//			pixelArray.add(monochromePixels);
-			
-			for (Squad squad : team) {
-				MonochromePixels monochromePixels = new MonochromePixels(squad.getColor());
+		if (menu.isTeamColors()) {
+			for (Team team : teams) {
+				MonochromePixels monochromePixels = new MonochromePixels(team.getColor());
 				pixelArray.add(monochromePixels);
 				
-				for (Unit unit : squad) {
-					monochromePixels.add(unit.getPlacement().getPosition());
+				for (Squad squad : team) {
+					
+					for (Unit unit : squad) {
+						monochromePixels.add(unit.getPlacement().getPosition());
+					}
+				}
+			}
+		} else {
+			for (Team team : teams) {
+				for (Squad squad : team) {
+					MonochromePixels monochromePixels = new MonochromePixels(squad.getColor());
+					pixelArray.add(monochromePixels);
+					
+					for (Unit unit : squad) {
+						monochromePixels.add(unit.getPlacement().getPosition());
+					}
 				}
 			}
 		}
