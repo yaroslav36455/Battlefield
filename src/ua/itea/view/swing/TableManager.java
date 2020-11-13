@@ -14,15 +14,15 @@ import ua.itea.model.Team.Squad;
 public class TableManager {	
 	private FormationTable teams;
 	private ArrayList<FormationTable> squads;
-	private Consumer<FormationTable> teamRowSelection;
-	private Consumer<FormationTable> teamRowUnselection;
-	private Consumer<TableRow> squadRowSelection;
-	private Consumer<TableRow> squadRowUnselection;
+	private Runner teamRowSelection;
+	private Runner teamRowUnselection;
+	private Runner squadRowSelection;
+	private Runner squadRowUnselection;
 	
-	public TableManager(Consumer<FormationTable> teamRowSelection,
-						Consumer<FormationTable> teamRowUnselection,
-						Consumer<TableRow> squadRowSelection,
-						Consumer<TableRow> squadRowUnselection) {
+	public TableManager(Runner teamRowSelection,
+						Runner teamRowUnselection,
+						Runner squadRowSelection,
+						Runner squadRowUnselection) {
 		this.teams = createTeamTable();
 		this.squads = new ArrayList<>();
 		this.teamRowSelection = teamRowSelection;
@@ -113,8 +113,8 @@ public class TableManager {
 	private FormationTable createSquadTable() {
 		FormationTable newTable =  new FormationTable();
 		
-		SquadListSelectionListener<TableRow> slsl
-						= new SquadListSelectionListener<>(newTable,
+		SquadListSelectionListener slsl
+						= new SquadListSelectionListener(newTable,
 					    squadRowSelection, squadRowUnselection);
 		newTable.getSelectionModel().addListSelectionListener(slsl);
 		return newTable;
@@ -148,28 +148,28 @@ public class TableManager {
 		private void unselect() {
 			if (value.isSelected()) {
 //				System.out.println("selected: " + value);
-				teamRowUnselection.accept(squads.get(value.getValue()));
+				teamRowUnselection.run();
 			}
 			value.unselect();
 //			System.out.println("selected: " + value);
 		}
 		
 		private void select(int index) {
-			teamRowSelection.accept(squads.get(index));
+			teamRowSelection.run();
 			value.select(index);
 		}
 	}
 	
-	private static class SquadListSelectionListener<T> implements ListSelectionListener {
+	private static class SquadListSelectionListener implements ListSelectionListener {
 
 		private FormationTable table;
-		private Consumer<T> selectionListener;
-		private Consumer<T> unselectionListener;
+		private Runner selectionListener;
+		private Runner unselectionListener;
 		private IntegerSelector value;
 		
 		public SquadListSelectionListener(FormationTable table,
-										  Consumer<T> selectionListener,
-										  Consumer<T> unselectionListener) {
+										  Runner selectionListener,
+										  Runner unselectionListener) {
 			this.table = table;
 			this.selectionListener = selectionListener;
 			this.unselectionListener = unselectionListener;
@@ -199,14 +199,14 @@ public class TableManager {
 		
 		private void unselect() {
 			if (value.isSelected()) {
-				unselectionListener.accept(null);
+				unselectionListener.run();
 			}
 			value.unselect();
 		}
 		
 		private void select(int index) {
 			if (!table.isTotalRow(index)) {
-				selectionListener.accept(null);
+				selectionListener.run();
 				value.select(index);
 			}
 		}

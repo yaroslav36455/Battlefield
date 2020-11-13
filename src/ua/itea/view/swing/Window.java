@@ -140,10 +140,10 @@ public class Window extends JFrame {
 	}
 	
 	private TableManager createTableManager() {
-		final Consumer<TableRow> squadRowSelection = new Consumer<TableRow>() {
+		final Runner squadRowSelection = new Runner() {
 
 			@Override
-			public void accept(TableRow t) {
+			public void run() {
 				removeSquad.setEnabled(true);
 				editSquad.setEnabled(true);
 				createUnits.setEnabled(true);
@@ -153,10 +153,10 @@ public class Window extends JFrame {
 			}
 		};
 		
-		final Consumer<TableRow> squadRowUnselection = new Consumer<TableRow>() {
+		final Runner squadRowUnselection = new Runner() {
 
 			@Override
-			public void accept(TableRow t) {
+			public void run() {
 				removeSquad.setEnabled(false);
 				editSquad.setEnabled(false);
 				createUnits.setEnabled(false);
@@ -167,34 +167,32 @@ public class Window extends JFrame {
 			
 		};
 		
-		final Consumer<FormationTable> teamRowSelection = new Consumer<FormationTable>() {
+		final Runner teamRowSelection = new Runner() {
 			
 			@Override
-			public void accept(FormationTable squadTable) {
+			public void run() {
 				removeTeam.setEnabled(true);
 				createSquad.setEnabled(true);
-				if (squadTable.isSelectedOrdinaryRow()) {
-					squadRowSelection.accept(null);
-				} else {
-					squadRowUnselection.accept(null);
-				}
 				
 				squadTablePanel.removeAll();
 				squadTablePanel.revalidate();
 //				squadTablePanel.repaint();
-
-				squadTablePanel.add(squadTable.makeScrollable());
 				
-				if (tableManager.isSelectedSquad()) {
-					selectedSquad = tableManager.getSelectedSquad();
+				FormationTable st = tableManager.getSquad(tableManager.getTeams().getSelectedRow());
+				squadTablePanel.add(st.makeScrollable());
+				
+				if (st.isSelectedOrdinaryRow()) {
+					squadRowSelection.run();
+				} else {
+					squadRowUnselection.run();
 				}
 			}
 		};
 		
-		final Consumer<FormationTable> teamRowUnselection = new Consumer<FormationTable>() {
+		final Runner teamRowUnselection = new Runner() {
 
 			@Override
-			public void accept(FormationTable squadTable) {
+			public void run() {
 				removeTeam.setEnabled(false);
 				createSquad.setEnabled(false);
 				
