@@ -150,8 +150,15 @@ public class Window extends JFrame {
 						createSquad.setEnabled(true);
 						if (squadTable.isSelectedOrdinaryRow()) {
 							removeSquad.setEnabled(true);
+							editSquad.setEnabled(true);
+							createUnits.setEnabled(true);
+							removeUnits.setEnabled(true);
 						} else {
 							removeSquad.setEnabled(false);
+							editSquad.setEnabled(false);
+							createUnits.setEnabled(false);
+							removeUnits.setEnabled(false);
+							selectedSquad = null;
 						}
 						
 						squadTablePanel.removeAll();
