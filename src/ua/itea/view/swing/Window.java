@@ -199,6 +199,8 @@ public class Window extends JFrame {
 				squadTablePanel.removeAll();
 //				squadTablePanel.revalidate();
 				squadTablePanel.repaint();
+				
+				squadRowUnselection.run();
 			}
 		};
 		
