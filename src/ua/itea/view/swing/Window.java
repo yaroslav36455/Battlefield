@@ -140,77 +140,74 @@ public class Window extends JFrame {
 	}
 	
 	private TableManager createTableManager() {
-		TableManager newTableManager = new TableManager(
-				new Consumer<FormationTable>() {
-					/* team row selection */
+		final Consumer<TableRow> squadRowSelection = new Consumer<TableRow>() {
+
+			@Override
+			public void accept(TableRow t) {
+				removeSquad.setEnabled(true);
+				editSquad.setEnabled(true);
+				createUnits.setEnabled(true);
+				removeUnits.setEnabled(true);
+				
+				selectedSquad = tableManager.getSelectedSquad();
+			}
+		};
+		
+		final Consumer<TableRow> squadRowUnselection = new Consumer<TableRow>() {
+
+			@Override
+			public void accept(TableRow t) {
+				removeSquad.setEnabled(false);
+				editSquad.setEnabled(false);
+				createUnits.setEnabled(false);
+				removeUnits.setEnabled(false);
+				
+				selectedSquad = null;
+			}
 			
-					@Override
-					public void accept(FormationTable squadTable) {
-						removeTeam.setEnabled(true);
-						createSquad.setEnabled(true);
-						if (squadTable.isSelectedOrdinaryRow()) {
-							removeSquad.setEnabled(true);
-							editSquad.setEnabled(true);
-							createUnits.setEnabled(true);
-							removeUnits.setEnabled(true);
-						} else {
-							removeSquad.setEnabled(false);
-							editSquad.setEnabled(false);
-							createUnits.setEnabled(false);
-							removeUnits.setEnabled(false);
-							selectedSquad = null;
-						}
-						
-						squadTablePanel.removeAll();
-						squadTablePanel.revalidate();
-//						squadTablePanel.repaint();
+		};
+		
+		final Consumer<FormationTable> teamRowSelection = new Consumer<FormationTable>() {
+			
+			@Override
+			public void accept(FormationTable squadTable) {
+				removeTeam.setEnabled(true);
+				createSquad.setEnabled(true);
+				if (squadTable.isSelectedOrdinaryRow()) {
+					squadRowSelection.accept(null);
+				} else {
+					squadRowUnselection.accept(null);
+				}
+				
+				squadTablePanel.removeAll();
+				squadTablePanel.revalidate();
+//				squadTablePanel.repaint();
 
-						squadTablePanel.add(squadTable.makeScrollable());
-						
-						if (tableManager.isSelectedSquad()) {
-							selectedSquad = tableManager.getSelectedSquad();
-						}
-					}
-				},
-				new Consumer<FormationTable>() {
-					/* team row unselection */
-					
-					@Override
-					public void accept(FormationTable squadTable) {
-						removeTeam.setEnabled(false);
-						createSquad.setEnabled(false);
-						
-						squadTablePanel.removeAll();
-//						squadTablePanel.revalidate();
-						squadTablePanel.repaint();
-					}
-				},
-				new Consumer<TableRow>() {
-					/* squad row selection */
+				squadTablePanel.add(squadTable.makeScrollable());
+				
+				if (tableManager.isSelectedSquad()) {
+					selectedSquad = tableManager.getSelectedSquad();
+				}
+			}
+		};
+		
+		final Consumer<FormationTable> teamRowUnselection = new Consumer<FormationTable>() {
 
-					@Override
-					public void accept(TableRow squadRow) {
-						removeSquad.setEnabled(true);
-						editSquad.setEnabled(true);
-						createUnits.setEnabled(true);
-						removeUnits.setEnabled(true);
-						
-						selectedSquad = tableManager.getSelectedSquad();
-					}
-				},
-				new Consumer<TableRow>() {
-					/* squad row unselection */
-					
-					@Override
-					public void accept(TableRow squadRow) {
-						removeSquad.setEnabled(false);
-						editSquad.setEnabled(false);
-						createUnits.setEnabled(false);
-						removeUnits.setEnabled(false);
-						
-						selectedSquad = null;
-					}
-				});
+			@Override
+			public void accept(FormationTable squadTable) {
+				removeTeam.setEnabled(false);
+				createSquad.setEnabled(false);
+				
+				squadTablePanel.removeAll();
+//				squadTablePanel.revalidate();
+				squadTablePanel.repaint();
+			}
+		};
+		
+		TableManager newTableManager = new TableManager(teamRowSelection,
+														teamRowUnselection,
+														squadRowSelection,
+														squadRowUnselection);
 		
 		return newTableManager;
 	}
