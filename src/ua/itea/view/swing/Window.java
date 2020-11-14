@@ -41,21 +41,11 @@ import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
-	private ArrayList<MonochromePixels> pixelArray;
 	private State state;
 	private Engine engine;
 	
 	private Squad selectedSquad;
 	private boolean isAdding;
-//	
-//	private JButton loadButton;
-//	private JButton saveButton;
-//	
-//	private JButton beginButton;
-//	private JButton continueButton;
-//	private JButton pauseButton;
-	
-	private AddTeamDialog addTeamDialog;
 	
 	private TableManager tableManager;
 	private JPanel teamPanel;
@@ -503,12 +493,10 @@ public class Window extends JFrame {
 	}
 	
 	private ScaleableGLJPanel createGLPanel() {
-		pixelArray = new ArrayList<>();
-		
 		GLProfile glProfile = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
 		
-		glPanel = new ScaleableGLJPanel(capabilities, pixelArray);
+		glPanel = new ScaleableGLJPanel(capabilities);
 		glPanel.setCellPositionListener(new Consumer<Position>() {
 
 			@Override
@@ -542,12 +530,12 @@ public class Window extends JFrame {
 	}
 	
 	private void redraw() {
-		updatePixelArray(state.getTeams());
+		glPanel.setPixelArray(getPixelArray(state.getTeams()));
 		glPanel.display();
 	}
 	
-	private void updatePixelArray(ArrayList<Team> teams) {
-		pixelArray.clear();
+	private ArrayList<MonochromePixels> getPixelArray(ArrayList<Team> teams) {
+		ArrayList<MonochromePixels> pixelArray = new ArrayList<>();
 		
 		if (menu.isTeamColors()) {
 			for (Team team : teams) {
@@ -573,6 +561,8 @@ public class Window extends JFrame {
 				}
 			}
 		}
+		
+		return pixelArray;
 	}
 }
 
