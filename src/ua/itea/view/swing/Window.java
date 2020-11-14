@@ -251,8 +251,6 @@ public class Window extends JFrame {
 				
 				state.getTeams().add(newTeam);
 				tableManager.addTeam(newTeam);
-				
-				redraw();
 			}
 		});
 		
