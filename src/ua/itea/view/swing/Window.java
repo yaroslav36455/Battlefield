@@ -395,6 +395,7 @@ public class Window extends JFrame {
 				if (requestSizeDialog == null) {
 					requestSizeDialog = new RequestSizeDialog(Window.this);
 					requestSizeDialog.setSizeConsumer(Window.this::createSimulation);
+					requestSizeDialog.setFieldSize(new Size(50, 50));
 				}
 				requestSizeDialog.setVisible(true);
 			}

@@ -19,6 +19,7 @@ public class RequestSizeDialog extends JDialog {
 	private JButton okButton;
 	private JButton cancelButton;
 	private Consumer<Size> sizeConsumer;
+	private Size acceptedSize;
 	
 	public RequestSizeDialog(Window owner) {
 		super(owner, "Field size", true);
@@ -68,7 +69,10 @@ public class RequestSizeDialog extends JDialog {
 						throw new NonPositiveNumberFormatException();
 					}
 					
-					sizeConsumer.accept(new Size(width, height));
+					Size tmpSize = new Size(width, height);
+					
+					sizeConsumer.accept(tmpSize);
+					setFieldSize(tmpSize);
 					setVisible(false);
 					
 				} catch (NumberFormatException ex) {
@@ -81,13 +85,15 @@ public class RequestSizeDialog extends JDialog {
 	}
 
 	private void setCancelButtonActionListener() {
-		cancelButton.addActionListener(e->setVisible(false));
+		cancelButton.addActionListener(e-> {
+			setVisible(false);
+			setFieldSize(acceptedSize);
+		});
 	}
-
-	@Override
-	public void setVisible(boolean b) {
-		widthTextField.setText("50");
-		heightTextField.setText("50");
-		super.setVisible(b);
+	
+	public void setFieldSize(Size size) {
+		acceptedSize = size;
+		widthTextField.setText(String.valueOf(size.getWidth()));
+		heightTextField.setText(String.valueOf(size.getHeight()));
 	}
 }
