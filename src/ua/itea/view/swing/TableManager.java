@@ -19,15 +19,24 @@ public class TableManager {
 	private Runner squadRowSelection;
 	private Runner squadRowUnselection;
 	
-	public TableManager(Runner teamRowSelection,
-						Runner teamRowUnselection,
-						Runner squadRowSelection,
-						Runner squadRowUnselection) {
+	public TableManager() {
 		this.teams = createTeamTable();
 		this.squads = new ArrayList<>();
+	}
+	
+	public void setTeamRowSelection(Runner teamRowSelection) {
 		this.teamRowSelection = teamRowSelection;
+	}
+	
+	public void setTeamRowUnselection(Runner teamRowUnselection) {
 		this.teamRowUnselection = teamRowUnselection;
+	}
+	
+	public void setSquadRowSelection(Runner squadRowSelection) {
 		this.squadRowSelection = squadRowSelection;
+	}
+	
+	public void setSquadRowUnselection(Runner squadRowUnselection) {
 		this.squadRowUnselection = squadRowUnselection;
 	}
 	

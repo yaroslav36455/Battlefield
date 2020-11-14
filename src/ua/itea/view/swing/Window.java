@@ -204,10 +204,12 @@ public class Window extends JFrame {
 			}
 		};
 		
-		TableManager newTableManager = new TableManager(teamRowSelection,
-														teamRowUnselection,
-														squadRowSelection,
-														squadRowUnselection);
+		TableManager newTableManager = new TableManager();
+		
+		newTableManager.setTeamRowSelection(teamRowSelection);
+		newTableManager.setTeamRowUnselection(teamRowUnselection);
+		newTableManager.setSquadRowSelection(squadRowSelection);
+		newTableManager.setSquadRowUnselection(squadRowUnselection);
 		
 		return newTableManager;
 	}
