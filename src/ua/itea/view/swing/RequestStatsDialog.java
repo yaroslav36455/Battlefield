@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 import ua.itea.model.Stats;
 
-public class EditSquadStatsDialog extends JDialog {
+public class RequestStatsDialog extends JDialog {
 	private Consumer<Stats> statsConsumer;
 	
 	private JTextField healthTextField;
@@ -24,8 +24,8 @@ public class EditSquadStatsDialog extends JDialog {
 	private JButton okButton;
 	private JButton cancelButton;
 	
-	public EditSquadStatsDialog(Window owner) {
-		super(owner, "Squad stats", true);
+	public RequestStatsDialog(Window owner) {
+		super(owner, "Stats", true);
 		
 		healthTextField = new JTextField();
 		damageTextField = new JTextField();
@@ -36,7 +36,7 @@ public class EditSquadStatsDialog extends JDialog {
 		
 		setLayout(new GridLayout(5, 2));
 		
-		add(new JLabel("Health:"));
+		add(new JLabel("Init Health:"));
 		add(healthTextField);
 		
 		add(new JLabel("Damage:"));
@@ -87,7 +87,7 @@ public class EditSquadStatsDialog extends JDialog {
 					setVisible(false);
 					
 				} catch (NumberFormatException ex) {
-					JOptionPane.showMessageDialog(EditSquadStatsDialog.this,
+					JOptionPane.showMessageDialog(RequestStatsDialog.this,
 							"Set positive integer values",
 							"Incorrect input", JOptionPane.WARNING_MESSAGE);
 				}

@@ -71,7 +71,7 @@ public class Window extends JFrame {
 	private JComponent rightSide;
 	
 	private Menu menu;
-	private EditSquadStatsDialog editSquadDialog;
+	private RequestStatsDialog editSquadDialog;
 
 	public Window() {
 		super("Battlefield");
@@ -322,7 +322,7 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (editSquadDialog == null) {
-					editSquadDialog = new EditSquadStatsDialog(Window.this);
+					editSquadDialog = new RequestStatsDialog(Window.this);
 				}
 				
 				editSquadDialog.setStatsConsumer(selectedSquad::setStats);

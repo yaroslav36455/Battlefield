@@ -22,7 +22,7 @@ public class RequestSizeDialog extends JDialog {
 	private Size acceptedSize;
 	
 	public RequestSizeDialog(Window owner) {
-		super(owner, "Field size", true);
+		super(owner, "Field Size", true);
 		
 		widthTextField = new JTextField();
 		heightTextField = new JTextField();
