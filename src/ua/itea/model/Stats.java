@@ -1,19 +1,19 @@
 package ua.itea.model;
 
 public class Stats {
-	private int health;
+	private float health;
 	private int damage;
 	private int defence;
 	private int velocity;
 	
-	public Stats(int health, int damage, int defence, int velocity) {
+	public Stats(float health, int damage, int defence, int velocity) {
 		this.health = health;
 		this.damage = damage;
 		this.defence = defence;
 		this.velocity = velocity;
 	}
 
-	public int getHealth() {
+	public float getHealth() {
 		return health;
 	}
 

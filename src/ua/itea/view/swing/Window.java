@@ -515,12 +515,12 @@ public class Window extends JFrame {
 
 			@Override
 			public void accept(Position position) {
-				Cell cell = state.getField().get(position);
-				
 				if (selectedSquad != null) {
+					Cell cell = state.getField().get(position);
+					
 					if (isAdding && !cell.hasUnit()) {
 						MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
-						Unit newUnit = selectedSquad.new Unit(100, new Placement(mutablePosition));
+						Unit newUnit = selectedSquad.new Unit(new Placement(mutablePosition));
 						
 						cell.setUnit(newUnit);
 						

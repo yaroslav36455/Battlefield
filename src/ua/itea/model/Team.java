@@ -126,6 +126,10 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			private float health;
 			private Placement placement;
 			
+			public Unit(Placement placement) {
+				this(getStats().getHealth(), placement);
+			}
+			
 			public Unit(float health, Placement placement) {
 				this.id = Squad.this.generateId();
 				this.health = health;
