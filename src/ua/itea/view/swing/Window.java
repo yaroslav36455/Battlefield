@@ -113,7 +113,7 @@ public class Window extends JFrame {
 		add(splitPane);
 		add(statusPanel, BorderLayout.SOUTH);
 
-		Dimension minSize = new Dimension(200, 200);
+		Dimension minSize = new Dimension(1000, 500);
 		setMinimumSize(minSize);
 		setExtendedState(MAXIMIZED_BOTH);
 		setVisible(true);
