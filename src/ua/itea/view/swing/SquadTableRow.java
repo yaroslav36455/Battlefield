@@ -6,9 +6,11 @@ import ua.itea.model.Team.Squad;
 
 public class SquadTableRow implements TableRow {
 	private Squad squad;
+	private Runner colorChanged;
 	
-	public SquadTableRow(Squad squad) {
+	public SquadTableRow(Squad squad, Runner colorChanged) {
 		this.squad = squad;
+		this.colorChanged = colorChanged;
 	}
 	
 	public Squad getSquad() {
@@ -42,6 +44,7 @@ public class SquadTableRow implements TableRow {
 	@Override
 	public void setColor(Object color) {
 		squad.setColor((Color) color);
+		colorChanged.run();
 	}
 
 	@Override

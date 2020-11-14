@@ -11,7 +11,8 @@ import ua.itea.model.State;
 import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 
-public class TableManager {	
+public class TableManager {
+	private Runner colorChanged;
 	private FormationTable teams;
 	private ArrayList<FormationTable> squads;
 	private Runner teamRowSelection;
@@ -19,7 +20,8 @@ public class TableManager {
 	private Runner squadRowSelection;
 	private Runner squadRowUnselection;
 	
-	public TableManager() {
+	public TableManager(Runner colorChanged) {
+		this.colorChanged = colorChanged;
 		this.teams = createTeamTable();
 		this.squads = new ArrayList<>();
 	}
@@ -64,7 +66,7 @@ public class TableManager {
 	
 	public void addSquad(Squad squad) {
 		FormationTable currentSquad = squads.get(teams.getSelectedRow());
-		currentSquad.add(new SquadTableRow(squad));
+		currentSquad.add(new SquadTableRow(squad, colorChanged));
 	}
 	
 	public Squad removeSquad() {
@@ -76,7 +78,7 @@ public class TableManager {
 	
 	public void addTeam(Team team) {
 		squads.add(createSquadTable());
-		teams.add(new TeamTableRow(team));
+		teams.add(new TeamTableRow(team, colorChanged));
 	}
 	
 	public Team removeTeam() {

@@ -186,7 +186,7 @@ public class Window extends JFrame {
 			}
 		};
 		
-		TableManager newTableManager = new TableManager();
+		TableManager newTableManager = new TableManager(Window.this::redraw);
 		
 		newTableManager.setTeamRowSelection(teamRowSelection);
 		newTableManager.setTeamRowUnselection(teamRowUnselection);
