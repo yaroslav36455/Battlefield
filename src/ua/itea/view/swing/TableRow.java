@@ -4,11 +4,6 @@ import java.awt.Color;
 
 public interface TableRow {
 
-	public Boolean getShow();
-
-	public void setShow(Boolean show);
-	public void setShow(Object show);
-
 	public String getName();
 	public void setName(String name);
 	public void setName(Object name);

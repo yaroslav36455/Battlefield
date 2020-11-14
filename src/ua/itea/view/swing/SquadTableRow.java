@@ -5,11 +5,9 @@ import java.awt.Color;
 import ua.itea.model.Team.Squad;
 
 public class SquadTableRow implements TableRow {
-	private Boolean show;
 	private Squad squad;
 	
 	public SquadTableRow(Squad squad) {
-		this.show = true;
 		this.squad = squad;
 	}
 	
@@ -17,26 +15,17 @@ public class SquadTableRow implements TableRow {
 		return squad;
 	}
 
-	public Boolean getShow() {
-		return show;
-	}
-
-	public void setShow(Boolean show) {
-		this.show = show;
-	}
-	
-	public void setShow(Object show) {
-		this.show = (Boolean) show;
-	}
-
+	@Override
 	public String getName() {
 		return squad.getName();
 	}
 
+	@Override
 	public void setName(String name) {
 		squad.setName(name);
 	}
 	
+	@Override
 	public void setName(Object name) {
 		squad.setName((String) name);
 	}
@@ -45,22 +34,27 @@ public class SquadTableRow implements TableRow {
 		return squad.getColor();
 	}
 
+	@Override
 	public void setColor(Color color) {
 		squad.setColor(color);
 	}
 	
+	@Override
 	public void setColor(Object color) {
 		squad.setColor((Color) color);
 	}
 
+	@Override
 	public Integer getAlive() {
 		return squad.getSize();
 	}
 
+	@Override
 	public Integer getDead() {
 		return squad.getTotal() - squad.getSize();
 	}
 	
+	@Override
 	public Integer getTotal() {
 		return getAlive() + getDead();
 	}

@@ -3,7 +3,6 @@ package ua.itea.view.swing;
 import java.awt.Color;
 
 public enum Column {
-	SHOW_OR_HIDE(Boolean.class),
 	NAME(String.class),
 	COLOR(Color.class),
 	ALIVE(Integer.class),

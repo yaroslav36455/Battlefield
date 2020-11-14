@@ -13,21 +13,6 @@ public class TotalRow implements TableRow {
 	}
 
 	@Override
-	public Boolean getShow() {
-		return show;
-	}
-
-	@Override
-	public void setShow(Boolean show) {
-		this.show = show;
-	}
-
-	@Override
-	public void setShow(Object show) {
-		this.show = (Boolean) show;
-	}
-
-	@Override
 	public String getName() {
 		return "Total";
 	}

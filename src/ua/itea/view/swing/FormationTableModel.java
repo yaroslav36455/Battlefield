@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 public class FormationTableModel extends AbstractTableModel {
-	private Object[] header = { new Boolean(false), "Name", "Color", "Alive", "Dead", "Total" };
+	private Object[] header = { "Name", "Color", "Alive", "Dead", "Total" };
 	private ArrayList<TableRow> ordinaryRows;
 	private TableRow totalRow;
 	
@@ -70,8 +70,6 @@ public class FormationTableModel extends AbstractTableModel {
 							: totalRow;
 		
 		switch (Column.values()[columnIndex]) {
-		case SHOW_OR_HIDE:
-			return tableRow.getShow();
 		case NAME:
 			return tableRow.getName();
 		case COLOR:
@@ -99,9 +97,6 @@ public class FormationTableModel extends AbstractTableModel {
 							: totalRow;
     	
 		switch (Column.values()[columnIndex]) {
-		case SHOW_OR_HIDE:
-			tableRow.setShow(value);
-			break;
 		case NAME:
 			tableRow.setName(value);
 			break;

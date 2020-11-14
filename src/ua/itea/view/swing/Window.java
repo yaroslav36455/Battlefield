@@ -33,7 +33,6 @@ import ua.itea.model.BattleField;
 import ua.itea.model.Cell;
 import ua.itea.model.Placement;
 import ua.itea.model.State;
-import ua.itea.model.Stats;
 import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 import ua.itea.model.Team.Squad.Unit;
@@ -225,11 +224,11 @@ public class Window extends JFrame {
 	private void resetEnabledButtons() {
 		createTeam.setEnabled(true);
 		removeTeam.setEnabled(false);
-		createSquad.setEnabled(false);;
-		removeSquad.setEnabled(false);;
-		editSquad.setEnabled(false);;
-		createUnits.setEnabled(false);;
-		removeUnits.setEnabled(false);;
+		createSquad.setEnabled(false);
+		removeSquad.setEnabled(false);
+		editSquad.setEnabled(false);
+		createUnits.setEnabled(false);
+		removeUnits.setEnabled(false);
 	}
 
 	private JButton createAddTeamButton() {

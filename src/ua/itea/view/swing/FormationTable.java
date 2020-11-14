@@ -16,10 +16,7 @@ public class FormationTable extends JTable {
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		getTableHeader().setReorderingAllowed(false);
 		setFillsViewportHeight(true);
-		getColumnModel().getColumn(0).setHeaderRenderer(new FormationTableCellHeaderRenderer());
-
-		getColumnModel().getColumn(Column.SHOW_OR_HIDE.ordinal()).setMinWidth(16);
-		getColumnModel().getColumn(Column.SHOW_OR_HIDE.ordinal()).setMaxWidth(16);
+		
 		getColumnModel().getColumn(Column.COLOR.ordinal()).setMinWidth(50);
 		getColumnModel().getColumn(Column.COLOR.ordinal()).setMaxWidth(50);
 

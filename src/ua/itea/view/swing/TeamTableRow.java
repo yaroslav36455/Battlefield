@@ -6,54 +6,47 @@ import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 
 public class TeamTableRow implements TableRow {
-	private Boolean show;
 	private Team team;
 	
 	public TeamTableRow(Team team) {
-		this.show = true;
 		this.team = team;
 	}
 	
 	public Team getTeam() {
 		return team;
 	}
-	
-	public Boolean getShow() {
-		return show;
-	}
 
-	public void setShow(Boolean show) {
-		this.show = show;
-	}
-	
-	public void setShow(Object show) {
-		this.show = (Boolean) show;
-	}
-
+	@Override
 	public String getName() {
 		return team.getName();
 	}
 
+	@Override
 	public void setName(String name) {
 		team.setName(name);
 	}
 	
+	@Override
 	public void setName(Object name) {
 		team.setName((String) name);
 	}
 
+	@Override
 	public Color getColor() {
 		return team.getColor();
 	}
 
+	@Override
 	public void setColor(Color color) {
 		team.setColor(color);
 	}
 	
+	@Override
 	public void setColor(Object color) {
 		team.setColor((Color) color);
 	}
 
+	@Override
 	public Integer getAlive() {
 		int alive = 0;
 		for (Squad squad : team) {
@@ -63,6 +56,7 @@ public class TeamTableRow implements TableRow {
 		return alive;
 	}
 
+	@Override
 	public Integer getDead() {
 		int dead = 0;
 		
@@ -73,6 +67,7 @@ public class TeamTableRow implements TableRow {
 		return dead;
 	}
 	
+	@Override
 	public Integer getTotal() {
 		return getAlive() + getDead();
 	}
