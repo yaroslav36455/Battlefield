@@ -33,6 +33,7 @@ import ua.itea.model.BattleField;
 import ua.itea.model.Cell;
 import ua.itea.model.Placement;
 import ua.itea.model.State;
+import ua.itea.model.Stats;
 import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 import ua.itea.model.Team.Squad.Unit;
@@ -71,6 +72,7 @@ public class Window extends JFrame {
 	private JComponent rightSide;
 	
 	private Menu menu;
+	private EditSquadStatsDialog editSquadDialog;
 
 	public Window() {
 		super("Battlefield");
@@ -315,12 +317,18 @@ public class Window extends JFrame {
 	}
 	
 	private JButton createEditSquadButton() {
-		JButton button = new JButton("Edit Squad");
+		JButton button = new JButton("Edit Stats");
 		
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("unimplemented createEditSquadButton()");
+				if (editSquadDialog == null) {
+					editSquadDialog = new EditSquadStatsDialog(Window.this);
+				}
+				
+				editSquadDialog.setStatsConsumer(selectedSquad::setStats);
+				editSquadDialog.setStats(selectedSquad.getStats());
+				editSquadDialog.setVisible(true);
 			}
 		});
 		

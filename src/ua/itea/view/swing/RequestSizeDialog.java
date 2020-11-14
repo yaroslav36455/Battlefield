@@ -21,7 +21,7 @@ public class RequestSizeDialog extends JDialog {
 	private Consumer<Size> sizeConsumer;
 	
 	public RequestSizeDialog(Window owner) {
-		super(owner, "Set field size", true);
+		super(owner, "Field size", true);
 		
 		widthTextField = new JTextField();
 		heightTextField = new JTextField();
@@ -55,7 +55,6 @@ public class RequestSizeDialog extends JDialog {
 	}
 	
 	private void setOkButtonActionListener() {
-		RequestSizeDialog thisDialog = this;
 		
 		okButton.addActionListener(new ActionListener() {
 			
@@ -65,11 +64,16 @@ public class RequestSizeDialog extends JDialog {
 					int width = Integer.valueOf(widthTextField.getText());
 					int height = Integer.valueOf(heightTextField.getText());
 					
+					if (width <= 0 || height <= 0) {
+						throw new NonPositiveNumberFormatException();
+					}
+					
 					sizeConsumer.accept(new Size(width, height));
 					setVisible(false);
 					
 				} catch (NumberFormatException ex) {
-					JOptionPane.showMessageDialog(thisDialog, "Set positive integer values",
+					JOptionPane.showMessageDialog(RequestSizeDialog.this,
+							"Set positive integer values",
 							"Incorrect input", JOptionPane.WARNING_MESSAGE);
 				}
 			}

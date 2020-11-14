@@ -72,6 +72,10 @@ public class Team extends Formation implements Iterable<Team.Squad> {
 			return stats;
 		}
 		
+		public void setStats(Stats stats) {
+			this.stats = stats;
+		}
+		
 		public void disposeAllUnits() {
 			for (int i = 0; i < units.size(); i++) {
 				units.set(i, null);
