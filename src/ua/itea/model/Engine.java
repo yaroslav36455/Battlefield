@@ -1,9 +1,6 @@
 package ua.itea.model;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import ua.itea.model.Team.Squad.Unit;
@@ -12,27 +9,19 @@ import ua.itea.model.util.Position;
 
 public class Engine {
 	private State state;
-	private PathFinder pathFinder;
-//	private TurnSequence turnSequence;
-//	private Actor actor;
-	
-	private Random random;
-//	private ArrayList<Unit> base;
-//	private ArrayList<Unit> turnSequence;
-	private NearbyPositions nearbyPositions;
 	
 	private ArrayList<Team> teams;
-	private ArrayList<Unit> units;
+	private TurnSequence turnSequence;
 	
+	private PathFinder pathFinder;
+	private NearbyPositions nearbyPositions;
 	private IsMovementAllowed isMovementAllowed;
 	private IsDestination isDestination;
 	
 	public Engine(State state) {
 		this.state = state;
-	
-		random = new Random(LocalTime.now().toNanoOfDay());
 		this.teams = state.getTeams();
-		units = new ArrayList<>();
+		turnSequence = new TurnSequence(teams);
 		
 		isMovementAllowed = new IsMovementAllowed();
 		isDestination = new IsDestination();
@@ -51,20 +40,9 @@ public class Engine {
 	public void iterate() {
 		Field<Cell> field = state.getField();
 		
-		for (Team team : teams) {
-			for (Team.Squad squad : team) {
-				for (Unit unit : squad) {
-					units.add(unit);
-				}
-			}
-		}
-		
-		Collections.shuffle(units, random);
-		
-		for (Unit thisUnit : units) {
-			Unit unit = thisUnit;
+		for (Unit thisUnit : turnSequence) {
 			
-			if (isAlive(unit)) {
+			if (isAlive(thisUnit)) {
 				Unit target = null;
 				
 				/* try hit */
@@ -93,35 +71,6 @@ public class Engine {
 				}
 			}
 		}
-		
-		units.clear();
-		
-		/*
-		 * Team id
-		 * Squad id, damage, defence
-		 * Field cell position
-		 * Unit full
-		 */
-		
-		/*
-		 * loop
-		 * Если есть рядом противник:
-		 * 		Бьём противника. Приоритет - повёрнутые спиной/боком и с низким здоровьем.
-		 * В противном случае:
-		 * 		Поиск пути к ближайшему противнику и шаг в его сторону.
-		 * 			Если сделали шаг и теперь рядом противник - сразу бьём его повышеным уроном.
-		 * Если был выполнен ход:
-		 * 		Отправляем юнит в базу. Застрявших добавляем в начало очереди. Начинаем цикл сначала.
-		 * В противном случае(путь блокирован):
-		 * 		Отправляем юнит к застрявшим.
-		 * pool Повторять до тех пор, пока не останутся только застрявшие и за весь цикл никто не сделал шагу.
-		 *  
-		 * loop
-		 * Если путь блокирован союзниками (или другими перемещаемыми/разрушаемыми объектами):
-		 * 		Делаем шаг в сторону к одному из этих объектов, от корого путь к какому-либо противнику минимальный.  
-		 * pool Повторять до тех пор, пока не останутся только застрявшие и за весь цикл никто не сделал шагу.
-		 * */
-
 	}
 
 	private Unit nearbyTarget(Unit thisUnit, Position position) {
@@ -136,8 +85,7 @@ public class Engine {
 			if (field.isWithin(nearbyPosition)) {
 				Unit otherUnit = field.get(nearbyPosition).getUnit();
 				
-				if (otherUnit != null && isOpponent(thisUnit, otherUnit)
-						&& isAlive(otherUnit)) {
+				if (otherUnit != null && isOpponent(thisUnit, otherUnit)) {
 					target = otherUnit;
 					break;
 				}
