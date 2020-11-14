@@ -178,14 +178,7 @@ public class Window extends JFrame {
 				squadTablePanel.revalidate();
 //				squadTablePanel.repaint();
 				
-				FormationTable st = tableManager.getSquad(tableManager.getTeams().getSelectedRow());
-				squadTablePanel.add(st.makeScrollable());
-				
-				if (st.isSelectedOrdinaryRow()) {
-					squadRowSelection.run();
-				} else {
-					squadRowUnselection.run();
-				}
+				squadTablePanel.add(tableManager.getSquad().makeScrollable());
 			}
 		};
 		
@@ -199,8 +192,6 @@ public class Window extends JFrame {
 				squadTablePanel.removeAll();
 //				squadTablePanel.revalidate();
 				squadTablePanel.repaint();
-				
-				squadRowUnselection.run();
 			}
 		};
 		

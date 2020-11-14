@@ -161,11 +161,18 @@ public class TableManager {
 			}
 			value.unselect();
 //			System.out.println("selected: " + value);
+			squadRowUnselection.run();
 		}
 		
 		private void select(int index) {
 			teamRowSelection.run();
 			value.select(index);
+			
+			if (squads.get(index).isSelectedOrdinaryRow()) {
+				squadRowSelection.run();
+			} else {
+				squadRowUnselection.run();
+			}
 		}
 	}
 	
