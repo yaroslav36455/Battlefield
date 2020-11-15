@@ -71,7 +71,6 @@ public class Window extends JFrame {
 	private JComponent rightSide;
 	
 	private Menu menu;
-	private RequestStatsDialog editSquadDialog;
 
 	public Window() {
 		super("Battlefield");
@@ -119,81 +118,57 @@ public class Window extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		addWindowListener(new WindowAdapter() {
-			
-			@Override
-			public void windowClosing(WindowEvent windowevent) {
-				dispose();
-			}
-	    });
-		
 		setKeyListeners();
 	}
 	
 	private TableManager createTableManager() {
-		final Runner squadRowSelection = new Runner() {
-
-			@Override
-			public void run() {
-				removeSquad.setEnabled(true);
-				editSquad.setEnabled(true);
-				createUnits.setEnabled(true);
-				removeUnits.setEnabled(true);
-				
-				selectedSquad = tableManager.getSelectedSquad();
-			}
-		};
+		TableManager newTableManager = new TableManager();
 		
-		final Runner squadRowUnselection = new Runner() {
-
-			@Override
-			public void run() {
-				removeSquad.setEnabled(false);
-				editSquad.setEnabled(false);
-				createUnits.setEnabled(false);
-				removeUnits.setEnabled(false);
-				
-				selectedSquad = null;
-			}
-			
-		};
-		
-		final Runner teamRowSelection = new Runner() {
-			
-			@Override
-			public void run() {
-				removeTeam.setEnabled(true);
-				createSquad.setEnabled(true);
-				
-				squadTablePanel.removeAll();
-				squadTablePanel.revalidate();
-//				squadTablePanel.repaint();
-				
-				squadTablePanel.add(tableManager.getSquad().makeScrollable());
-			}
-		};
-		
-		final Runner teamRowUnselection = new Runner() {
-
-			@Override
-			public void run() {
-				removeTeam.setEnabled(false);
-				createSquad.setEnabled(false);
-				
-				squadTablePanel.removeAll();
-//				squadTablePanel.revalidate();
-				squadTablePanel.repaint();
-			}
-		};
-		
-		TableManager newTableManager = new TableManager(Window.this::redraw);
-		
-		newTableManager.setTeamRowSelection(teamRowSelection);
-		newTableManager.setTeamRowUnselection(teamRowUnselection);
-		newTableManager.setSquadRowSelection(squadRowSelection);
-		newTableManager.setSquadRowUnselection(squadRowUnselection);
+		newTableManager.setColorChanged(this::redraw);
+		newTableManager.setTeamRowSelection(this::teamRowSelection);
+		newTableManager.setTeamRowUnselection(this::teamRowUnselection);
+		newTableManager.setSquadRowSelection(this::squadRowSelection);
+		newTableManager.setSquadRowUnselection(this::squadRowUnselection);
 		
 		return newTableManager;
+	}
+	
+	private void teamRowSelection() {
+		removeTeam.setEnabled(true);
+		createSquad.setEnabled(true);
+		
+		squadTablePanel.removeAll();
+		squadTablePanel.revalidate();
+//		squadTablePanel.repaint();
+		
+		squadTablePanel.add(tableManager.getSquad().makeScrollable());
+	}
+	
+	private void teamRowUnselection() {
+		removeTeam.setEnabled(false);
+		createSquad.setEnabled(false);
+		
+		squadTablePanel.removeAll();
+//		squadTablePanel.revalidate();
+		squadTablePanel.repaint();
+	}
+	
+	private void squadRowSelection() {
+		removeSquad.setEnabled(true);
+		editSquad.setEnabled(true);
+		createUnits.setEnabled(true);
+		removeUnits.setEnabled(true);
+		
+		selectedSquad = tableManager.getSelectedSquad();
+	}
+	
+	private void squadRowUnselection() {
+		removeSquad.setEnabled(false);
+		editSquad.setEnabled(false);
+		createUnits.setEnabled(false);
+		removeUnits.setEnabled(false);
+		
+		selectedSquad = null;
 	}
 
 	private void setKeyListeners() {
@@ -219,16 +194,6 @@ public class Window extends JFrame {
 				}
 			} 
 		});
-	}
-	
-	private void resetEnabledButtons() {
-		createTeam.setEnabled(true);
-		removeTeam.setEnabled(false);
-		createSquad.setEnabled(false);
-		removeSquad.setEnabled(false);
-		editSquad.setEnabled(false);
-		createUnits.setEnabled(false);
-		removeUnits.setEnabled(false);
 	}
 
 	private JButton createAddTeamButton() {
@@ -319,6 +284,8 @@ public class Window extends JFrame {
 		JButton button = new JButton("Edit Stats");
 		
 		button.addActionListener(new ActionListener() {
+			private RequestStatsDialog editSquadDialog;
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (editSquadDialog == null) {
@@ -405,13 +372,7 @@ public class Window extends JFrame {
 		menu.addUseTeamColorsListener(e->redraw());
 		menu.addUseSquadColorsListener(e->redraw());
 		
-		menu.addExitListeners(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Window.this.dispatchEvent(new WindowEvent(Window.this, WindowEvent.WINDOW_CLOSING));
-			}
-		});
+		menu.addExitListeners(e->dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		
 		return menuBar;
 	}
@@ -444,6 +405,16 @@ public class Window extends JFrame {
 				   				   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		rightSide.add(viewport);
 		rightSide.validate();
+	}
+	
+	private void resetEnabledButtons() {
+		createTeam.setEnabled(true);
+		removeTeam.setEnabled(false);
+		createSquad.setEnabled(false);
+		removeSquad.setEnabled(false);
+		editSquad.setEnabled(false);
+		createUnits.setEnabled(false);
+		removeUnits.setEnabled(false);
 	}
 	
 	private void removeSimulation() {
@@ -506,7 +477,7 @@ public class Window extends JFrame {
 		
 		glPanel = new ScaleableGLJPanel(capabilities);
 		glPanel.setCellPositionListener(new Consumer<Position>() {
-
+			
 			@Override
 			public void accept(Position position) {
 				if (selectedSquad != null) {
@@ -524,14 +495,13 @@ public class Window extends JFrame {
 						if (selectedSquad.equalTo(unit.getSquad())) {
 							unit.dispose();
 							cell.setUnit(null);
-						}; 
+						};
 					}
 					
 					tableManager.update();
 					redraw();
 				}
 			}
-			
 		});
 		
 		return glPanel;

@@ -12,18 +12,21 @@ import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 
 public class TableManager {
-	private Runner colorChanged;
 	private FormationTable teams;
 	private ArrayList<FormationTable> squads;
+	private Runner colorChanged;
 	private Runner teamRowSelection;
 	private Runner teamRowUnselection;
 	private Runner squadRowSelection;
 	private Runner squadRowUnselection;
 	
-	public TableManager(Runner colorChanged) {
-		this.colorChanged = colorChanged;
+	public TableManager() {
 		this.teams = createTeamTable();
 		this.squads = new ArrayList<>();
+	}
+	
+	public void setColorChanged(Runner colorChanged) {
+		this.colorChanged = colorChanged;
 	}
 	
 	public void setTeamRowSelection(Runner teamRowSelection) {
