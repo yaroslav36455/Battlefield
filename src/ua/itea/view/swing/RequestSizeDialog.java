@@ -38,6 +38,8 @@ public class RequestSizeDialog extends JDialog {
 		add(okButton);
 		add(cancelButton);
 		
+		getRootPane().setDefaultButton(okButton);
+		
 		pack();
 		setResizable(false);
 		setLocationRelativeTo(null);
