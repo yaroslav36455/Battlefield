@@ -40,11 +40,12 @@ import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
 	private State state;
 	private Engine engine;
 	
 	private Squad selectedSquad;
-	private boolean isAdding;
 	
 	private TableManager tableManager;
 	private JPanel teamPanel;
@@ -58,8 +59,6 @@ public class Window extends JFrame {
 	private JButton createSquad;
 	private JButton removeSquad;
 	private JButton editSquad;
-	private JButton createUnits;
-	private JButton removeUnits;
 	
 	private ScaleableGLJPanel glPanel;
 	private JComponent viewport;
@@ -85,8 +84,6 @@ public class Window extends JFrame {
 		createSquad = createAddSquadButton();
 		removeSquad = createRemoveSquadButton();
 		editSquad = createEditSquadButton();
-		createUnits = createAddUnitsButton();
-		removeUnits = createRemoveUnitsButton();
 		teamPanel = createTeamTablePanel();
 		squadPanel = createSquadTablePanel();
 		
@@ -155,8 +152,6 @@ public class Window extends JFrame {
 	private void squadRowSelection() {
 		removeSquad.setEnabled(true);
 		editSquad.setEnabled(true);
-		createUnits.setEnabled(true);
-		removeUnits.setEnabled(true);
 		
 		selectedSquad = tableManager.getSelectedSquad();
 	}
@@ -164,8 +159,6 @@ public class Window extends JFrame {
 	private void squadRowUnselection() {
 		removeSquad.setEnabled(false);
 		editSquad.setEnabled(false);
-		createUnits.setEnabled(false);
-		removeUnits.setEnabled(false);
 		
 		selectedSquad = null;
 	}
@@ -180,16 +173,14 @@ public class Window extends JFrame {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				/* empty */
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (engine != null
-						&& tableManager != null
+				if (engine != null && tableManager != null
 						&& e.getKeyCode() == KeyEvent.VK_SPACE) {
-					engine.iterate();
 					
+					engine.iterate();
 					tableManager.update();
 					redraw();
 				}
@@ -302,32 +293,6 @@ public class Window extends JFrame {
 		return button;
 	}
 	
-	private JButton createAddUnitsButton() {
-		JButton button = new JButton("Add Units");
-		
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				isAdding = true;
-			}
-		});
-		
-		return button;
-	}
-	
-	private JButton createRemoveUnitsButton() {
-		JButton button = new JButton("Remove Units");
-		
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				isAdding = false;
-			}
-		});
-		
-		return button;
-	}
-	
 	private JComponent createLeftSide() {
 		JPanel panel = new JPanel();
 		orgPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
@@ -414,8 +379,6 @@ public class Window extends JFrame {
 		createSquad.setEnabled(false);
 		removeSquad.setEnabled(false);
 		editSquad.setEnabled(false);
-		createUnits.setEnabled(false);
-		removeUnits.setEnabled(false);
 	}
 	
 	private void removeSimulation() {
@@ -447,8 +410,7 @@ public class Window extends JFrame {
 	}
 	
 	private JPanel createSquadTablePanel() {
-		JPanel panel = createTablePanel(createSquad, removeSquad, editSquad,
-									    createUnits, removeUnits);
+		JPanel panel = createTablePanel(createSquad, removeSquad, editSquad);
 		squadTablePanel = new JPanel();
 		squadTablePanel.setLayout(new GridLayout());
 		
@@ -477,20 +439,34 @@ public class Window extends JFrame {
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
 		
 		glPanel = new ScaleableGLJPanel(capabilities);
-		glPanel.setCellPositionListener(new Consumer<Position>() {
+		glPanel.setConsumerForLMB(new Consumer<Position>() {
 			
 			@Override
 			public void accept(Position position) {
 				if (selectedSquad != null) {
 					Cell cell = state.getField().get(position);
 					
-					if (isAdding && !cell.hasUnit()) {
+					if (!cell.hasUnit()) {
 						MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
 						Unit newUnit = selectedSquad.new Unit(new Placement(mutablePosition));
 						
 						cell.setUnit(newUnit);
-						
-					} else if (!isAdding && cell.hasUnit()) {
+					}
+					
+					tableManager.update();
+					redraw();
+				}
+			}
+		});
+		
+		glPanel.setConsumerForRMB(new Consumer<Position>() {
+
+			@Override
+			public void accept(Position position) {
+				if (selectedSquad != null) {
+					Cell cell = state.getField().get(position);
+					
+					if (cell.hasUnit()) {
 						Unit unit = cell.getUnit();
 						
 						if (selectedSquad.equalTo(unit.getSquad())) {
@@ -503,8 +479,8 @@ public class Window extends JFrame {
 					redraw();
 				}
 			}
+			
 		});
-		
 		return glPanel;
 	}
 	

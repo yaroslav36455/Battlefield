@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -25,16 +26,18 @@ import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 
 public class ScaleableGLJPanel extends GLJPanel {
-
+	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<MonochromePixels> pixelArray;
 	private int fieldWidth;
 	private int fieldHeight;
 	private float scale;
-	private Consumer<Position> cellPosition;
+	private ViewportMouseListener viewportMouseListener;
 
 	public ScaleableGLJPanel(GLCapabilities capabilities) {
 		super(capabilities);
 		pixelArray = new ArrayList<>();
+		viewportMouseListener = new ViewportMouseListener();
 
 		setFocusable(false);
 		setListeners();
@@ -44,8 +47,12 @@ public class ScaleableGLJPanel extends GLJPanel {
 		this.pixelArray = pixelArray;
 	}
 
-	public void setCellPositionListener(Consumer<Position> cellPosition) {
-		this.cellPosition = cellPosition;
+	public void setConsumerForLMB(Consumer<Position> cellConsumerForLMB) {
+		viewportMouseListener.setConsumerForLMB(cellConsumerForLMB);
+	}
+	
+	public void setConsumerForRMB(Consumer<Position> setConsumerForRMB) {
+		viewportMouseListener.setConsumerForRMB(setConsumerForRMB);
 	}
 
 	private void setListeners() {
@@ -109,61 +116,8 @@ public class ScaleableGLJPanel extends GLJPanel {
 			}
 		});
 
-		addMouseListener(new MouseListener() {
-			private MutablePosition currentPosition = new MutablePosition();
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-//				System.out.println("mouseReleased");
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-//				System.out.println("mousePressed");
-				Point point = e.getPoint();
-
-				currentPosition.setX((int) (point.getX() / scale));
-				currentPosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
-				cellPosition.accept(currentPosition);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-//				System.out.println("mouseExited");
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-//				System.out.println("mouseEntered");
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-//				System.out.println("mouseClicked");
-			}
-		});
-
-		addMouseMotionListener(new MouseMotionListener() {
-			private MutablePosition currentPosition = new MutablePosition();
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-//				System.out.println("mouseMoved");
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				Point point = e.getPoint();
-
-				currentPosition.setX((int) (point.getX() / scale));
-				currentPosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
-
-				if (currentPosition.getX() >= 0 && currentPosition.getX() < fieldWidth && currentPosition.getY() >= 0
-						&& currentPosition.getY() < fieldHeight) {
-					cellPosition.accept(currentPosition);
-				}
-			}
-		});
+		addMouseListener(viewportMouseListener);
+		addMouseMotionListener(viewportMouseListener);
 	}
 
 	public JPanel makeViewport(int width, int height, float scale) {
@@ -181,5 +135,86 @@ public class ScaleableGLJPanel extends GLJPanel {
 
 		panel.setBackground(new Color(0, 0, 0));
 		return panel;
+	}
+	
+	private class ViewportMouseListener implements MouseListener,
+												   MouseMotionListener {
+
+		private Consumer<Position> cellPositionForLMB;
+		private Consumer<Position> cellPositionForRMB;
+
+		public void setConsumerForLMB(Consumer<Position> cellPositionForLMB) {
+			this.cellPositionForLMB = cellPositionForLMB;
+		}
+
+		public void setConsumerForRMB(Consumer<Position> cellPositionForRMB) {
+			this.cellPositionForRMB = cellPositionForRMB;
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent mouseEvent) {
+			MutablePosition currentPosition = determinePosition(mouseEvent);
+
+			if (withinTheField(currentPosition)) {
+				if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+					cellPositionForLMB.accept(currentPosition);
+				} else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+					cellPositionForRMB.accept(currentPosition);
+				}
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent mouseEvent) {
+			/* empty */
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent mouseEvent) {
+			/* empty */
+		}
+
+		@Override
+		public void mousePressed(MouseEvent mouseEvent) {
+			MutablePosition currentPosition = determinePosition(mouseEvent);
+			
+			if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+				cellPositionForLMB.accept(currentPosition);
+			} else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+				cellPositionForRMB.accept(currentPosition);
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent mouseEvent) {
+			/* empty */
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent mouseEvent) {
+			/* empty */
+		}
+
+		@Override
+		public void mouseExited(MouseEvent mouseEvent) {
+			/* empty */
+		}
+		
+		private boolean withinTheField(MutablePosition mutablePosition) {
+			return mutablePosition.getX() >= 0
+					&& mutablePosition.getX() < fieldWidth
+					&& mutablePosition.getY() >= 0
+					&& mutablePosition.getY() < fieldHeight;
+		}
+		
+		private MutablePosition determinePosition(MouseEvent mouseEvent) {
+			Point point = mouseEvent.getPoint();
+			MutablePosition mutablePosition = new MutablePosition();
+
+			mutablePosition.setX((int) (point.getX() / scale));
+			mutablePosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
+			
+			return mutablePosition;
+		}
 	}
 }
