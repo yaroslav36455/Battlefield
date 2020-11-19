@@ -4,11 +4,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class TotalRow implements TableRow {
-	private Boolean show;
 	private ArrayList<TableRow> ordinaryRows;
 	
 	public TotalRow(ArrayList<TableRow> ordinaryRows) {
-		this.show = true;
 		this.ordinaryRows = ordinaryRows;
 	}
 

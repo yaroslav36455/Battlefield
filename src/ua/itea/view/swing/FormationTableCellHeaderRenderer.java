@@ -1,17 +1,9 @@
 package ua.itea.view.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -25,12 +17,10 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import sun.swing.DefaultLookup;
-import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 public class FormationTableCellHeaderRenderer extends JCheckBox implements TableCellRenderer {
-	
-	//private JCheckBox checkBox;
-	
+	private static final long serialVersionUID = 1L;
+
 	public FormationTableCellHeaderRenderer() {
 		setEnabled(true);
 	}

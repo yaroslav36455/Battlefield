@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -345,7 +346,20 @@ public class Window extends JFrame {
 		menu.addUseTeamColorsListener(e->redraw());
 		menu.addUseSquadColorsListener(e->redraw());
 		
-		menu.addExitListeners(e->dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
+		menu.addHelpListener(e->JOptionPane.showMessageDialog(this,
+				"* Create field\n"
+				+ "* Add teams and squads\n"
+				+ "* Add units to the field\n"
+				+ "  * Select squad\n"
+				+ "  * Drag the LMB across the field to add units\n"
+				+ "  * Drag the RMB across the field to kill units\n"
+				+ "  * Repeat this for different teams\n"
+				+ "* Press the SPACE, when on the field there are units"
+				+ " of two or more different teams to iterate",
+				"Help", JOptionPane.INFORMATION_MESSAGE));
+		
+		menu.addExitListener(e->dispatchEvent(new WindowEvent(this,
+				WindowEvent.WINDOW_CLOSING)));
 		
 		return menuBar;
 	}

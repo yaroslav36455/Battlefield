@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 public class FormationTableModel extends AbstractTableModel {
+	private static final long serialVersionUID = 1L;
+	
 	private Object[] header = { "Name", "Color", "Alive", "Dead", "Total" };
 	private ArrayList<TableRow> ordinaryRows;
 	private TableRow totalRow;

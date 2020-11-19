@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import ua.itea.model.util.Size;
 
 public class RequestSizeDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
+	
 	private JTextField widthTextField;
 	private JTextField heightTextField;
 	private JButton okButton;

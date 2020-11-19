@@ -1,13 +1,11 @@
 package ua.itea.view.swing;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import ua.itea.model.State;
 import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 

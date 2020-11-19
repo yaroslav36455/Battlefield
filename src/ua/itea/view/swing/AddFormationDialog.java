@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public abstract class AddFormationDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
 	
 	private JTextField teamNameTextField;
 	private JButton colorPickerButton;

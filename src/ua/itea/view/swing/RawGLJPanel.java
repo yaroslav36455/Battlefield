@@ -19,6 +19,7 @@ import com.jogamp.opengl.glu.GLU;
 import ua.itea.model.util.Position;
 
 public class RawGLJPanel extends GLJPanel {
+	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<MonochromePixels> pixelArray;
 	

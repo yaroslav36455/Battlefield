@@ -3,10 +3,8 @@ package ua.itea.view.swing;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 public class TableIntegerCellRenderer implements TableCellRenderer {

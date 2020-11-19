@@ -9,12 +9,13 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
 public class TableColorCellEditor extends AbstractCellEditor
 								  implements TableCellEditor {
+	private static final long serialVersionUID = 1L;
+	
 	private Color currentColor = Color.WHITE;
 	private JColorChooser colorChooser;
 	private JDialog dialog;

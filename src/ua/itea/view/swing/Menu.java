@@ -11,10 +11,13 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
 public class Menu extends JMenu {
+	private static final long serialVersionUID = 1L;
+	
 	private JMenuItem createField;
 	private JMenuItem removeField;
 	private JRadioButtonMenuItem useTeamColors;
 	private JRadioButtonMenuItem useSquadColors;
+	private JMenuItem help;
 	private JMenuItem exit;
 	
 	public Menu() {
@@ -24,6 +27,7 @@ public class Menu extends JMenu {
 		removeField = new JMenuItem("Remove field");
 		useTeamColors = new JRadioButtonMenuItem("Use team colors");
 		useSquadColors = new JRadioButtonMenuItem("Use squad colors");
+		help = new JMenuItem("Help");
 		exit = new JMenuItem("Exit");
 		
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -35,6 +39,8 @@ public class Menu extends JMenu {
 		add(new JSeparator());
 		add(useTeamColors);
 		add(useSquadColors);
+		add(new JSeparator());
+		add(help);
 		add(new JSeparator());
 		add(exit);
 		
@@ -77,6 +83,7 @@ public class Menu extends JMenu {
 		setMnemonic(KeyEvent.VK_M);
 		createField.setMnemonic(KeyEvent.VK_C);
 		removeField.setMnemonic(KeyEvent.VK_R);
+		help.setMnemonic(KeyEvent.VK_H);
 		exit.setMnemonic(KeyEvent.VK_X);
 	}
 	
@@ -96,7 +103,11 @@ public class Menu extends JMenu {
 		useSquadColors.addActionListener(newListener);
 	}
 	
-	public void addExitListeners(ActionListener newListener) {
+	public void addHelpListener(ActionListener newListener) {
+		help.addActionListener(newListener);
+	}
+	
+	public void addExitListener(ActionListener newListener) {
 		exit.addActionListener(newListener);
 	}
 	

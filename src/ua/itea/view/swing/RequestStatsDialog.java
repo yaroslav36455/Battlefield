@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import ua.itea.model.Stats;
 
 public class RequestStatsDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
+
 	private Consumer<Stats> statsConsumer;
 	
 	private JTextField healthTextField;
