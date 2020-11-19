@@ -22,7 +22,6 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
-import ua.itea.model.util.MutablePosition;
 import ua.itea.model.util.Position;
 
 public class ScaleableGLJPanel extends GLJPanel {
@@ -47,11 +46,11 @@ public class ScaleableGLJPanel extends GLJPanel {
 		this.pixelArray = pixelArray;
 	}
 
-	public void setConsumerForLMB(Consumer<Position> cellConsumerForLMB) {
+	public void setConsumerForLMB(Consumer<Point> cellConsumerForLMB) {
 		viewportMouseListener.setConsumerForLMB(cellConsumerForLMB);
 	}
 	
-	public void setConsumerForRMB(Consumer<Position> setConsumerForRMB) {
+	public void setConsumerForRMB(Consumer<Point> setConsumerForRMB) {
 		viewportMouseListener.setConsumerForRMB(setConsumerForRMB);
 	}
 
@@ -140,26 +139,26 @@ public class ScaleableGLJPanel extends GLJPanel {
 	private class ViewportMouseListener implements MouseListener,
 												   MouseMotionListener {
 
-		private Consumer<Position> cellPositionForLMB;
-		private Consumer<Position> cellPositionForRMB;
+		private Consumer<Point> cellPositionForLMB;
+		private Consumer<Point> cellPositionForRMB;
 
-		public void setConsumerForLMB(Consumer<Position> cellPositionForLMB) {
+		public void setConsumerForLMB(Consumer<Point> cellPositionForLMB) {
 			this.cellPositionForLMB = cellPositionForLMB;
 		}
 
-		public void setConsumerForRMB(Consumer<Position> cellPositionForRMB) {
+		public void setConsumerForRMB(Consumer<Point> cellPositionForRMB) {
 			this.cellPositionForRMB = cellPositionForRMB;
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent mouseEvent) {
-			MutablePosition currentPosition = determinePosition(mouseEvent);
+			Point currentCellPosition = determinePosition(mouseEvent);
 
-			if (withinTheField(currentPosition)) {
+			if (withinTheField(currentCellPosition)) {
 				if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-					cellPositionForLMB.accept(currentPosition);
+					cellPositionForLMB.accept(currentCellPosition);
 				} else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-					cellPositionForRMB.accept(currentPosition);
+					cellPositionForRMB.accept(currentCellPosition);
 				}
 			}
 		}
@@ -176,12 +175,12 @@ public class ScaleableGLJPanel extends GLJPanel {
 
 		@Override
 		public void mousePressed(MouseEvent mouseEvent) {
-			MutablePosition currentPosition = determinePosition(mouseEvent);
+			Point currentCellPosition = determinePosition(mouseEvent);
 			
 			if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-				cellPositionForLMB.accept(currentPosition);
+				cellPositionForLMB.accept(currentCellPosition);
 			} else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-				cellPositionForRMB.accept(currentPosition);
+				cellPositionForRMB.accept(currentCellPosition);
 			}
 		}
 
@@ -200,21 +199,18 @@ public class ScaleableGLJPanel extends GLJPanel {
 			/* empty */
 		}
 		
-		private boolean withinTheField(MutablePosition mutablePosition) {
-			return mutablePosition.getX() >= 0
-					&& mutablePosition.getX() < fieldWidth
-					&& mutablePosition.getY() >= 0
-					&& mutablePosition.getY() < fieldHeight;
+		private boolean withinTheField(Point point) {
+			return point.x >= 0 && point.x < fieldWidth
+					&& point.y >= 0 && point.y < fieldHeight;
 		}
 		
-		private MutablePosition determinePosition(MouseEvent mouseEvent) {
+		private Point determinePosition(MouseEvent mouseEvent) {
 			Point point = mouseEvent.getPoint();
-			MutablePosition mutablePosition = new MutablePosition();
-
-			mutablePosition.setX((int) (point.getX() / scale));
-			mutablePosition.setY(-((int) (point.getY() / scale)) + (fieldHeight - 1));
 			
-			return mutablePosition;
+			point.x = (int) (point.getX() / scale);
+			point.y = -((int) (point.getY() / scale)) + (fieldHeight - 1);
+			
+			return point;
 		}
 	}
 }

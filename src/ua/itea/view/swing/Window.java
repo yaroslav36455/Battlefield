@@ -3,6 +3,7 @@ package ua.itea.view.swing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,7 +37,6 @@ import ua.itea.model.Team;
 import ua.itea.model.Team.Squad;
 import ua.itea.model.Team.Squad.Unit;
 import ua.itea.model.util.MutablePosition;
-import ua.itea.model.util.Position;
 import ua.itea.model.util.Size;
 
 public class Window extends JFrame {
@@ -439,16 +439,16 @@ public class Window extends JFrame {
 		GLCapabilities capabilities = new GLCapabilities(glProfile);
 		
 		glPanel = new ScaleableGLJPanel(capabilities);
-		glPanel.setConsumerForLMB(new Consumer<Position>() {
+		glPanel.setConsumerForLMB(new Consumer<Point>() {
 			
 			@Override
-			public void accept(Position position) {
+			public void accept(Point point) {
 				if (selectedSquad != null) {
-					Cell cell = state.getField().get(position);
+					Cell cell = state.getField().get(point.x, point.y);
 					
 					if (!cell.hasUnit()) {
-						MutablePosition mutablePosition = new MutablePosition(position.getX(), position.getY());
-						Unit newUnit = selectedSquad.new Unit(new Placement(mutablePosition));
+						MutablePosition pos = new MutablePosition(point.x, point.y);
+						Unit newUnit = selectedSquad.new Unit(new Placement(pos));
 						
 						cell.setUnit(newUnit);
 					}
@@ -459,12 +459,12 @@ public class Window extends JFrame {
 			}
 		});
 		
-		glPanel.setConsumerForRMB(new Consumer<Position>() {
+		glPanel.setConsumerForRMB(new Consumer<Point>() {
 
 			@Override
-			public void accept(Position position) {
+			public void accept(Point point) {
 				if (selectedSquad != null) {
-					Cell cell = state.getField().get(position);
+					Cell cell = state.getField().get(point.x, point.y);
 					
 					if (cell.hasUnit()) {
 						Unit unit = cell.getUnit();
