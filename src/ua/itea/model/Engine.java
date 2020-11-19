@@ -39,9 +39,9 @@ public class Engine {
 	
 	public void iterate() {
 		Field<Cell> field = state.getField();
+		boolean iterated = false;
 		
 		for (Unit thisUnit : turnSequence) {
-			
 			if (isAlive(thisUnit)) {
 				Unit target = null;
 				
@@ -49,6 +49,7 @@ public class Engine {
 				target = nearbyTarget(thisUnit, thisUnit.getPlacement().getPosition());
 				if (target != null) {
 					hit(1.f, thisUnit, target);
+					iterated = true;
 				} else {
 					/* find path */
 					isDestination.setClient(thisUnit);
@@ -60,6 +61,7 @@ public class Engine {
 					for (CardinalPoints direction : path) {
 						thisUnit.getPlacement().setDirection(direction);
 						thisUnit.getPlacement().getPosition().move(direction);
+						iterated = true;
 					}
 					field.get(thisUnit.getPlacement().getPosition()).setUnit(thisUnit);
 					
@@ -70,6 +72,10 @@ public class Engine {
 					}
 				}
 			}
+		}
+		
+		if(iterated) {
+			state.iterate();
 		}
 	}
 

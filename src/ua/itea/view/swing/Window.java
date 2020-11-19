@@ -69,13 +69,13 @@ public class Window extends JFrame {
 	private JComponent rightSide;
 	
 	private Menu menu;
+	private JLabel statusLabel;
 
 	public Window() {
 		super("Battlefield");
 	
 		JSplitPane splitPane;
 		JPanel statusPanel;
-		JLabel statusLabel;
 		
 		setLayout(new BorderLayout());
 		
@@ -173,19 +173,26 @@ public class Window extends JFrame {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
+				/* empty */
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (engine != null && tableManager != null
 						&& e.getKeyCode() == KeyEvent.VK_SPACE) {
-					
 					engine.iterate();
 					tableManager.update();
+					
+					statusLabel.setText(getStatusLabelText());
+					
 					redraw();
 				}
 			} 
 		});
+	}
+	
+	private String getStatusLabelText() {
+		return "Iteration:" + state.getIteration();
 	}
 
 	private JButton createAddTeamButton() {
@@ -352,6 +359,7 @@ public class Window extends JFrame {
 		
 		placePanels(fieldSize);
 		menu.setCreatingSuccess();
+		statusLabel.setText(getStatusLabelText());
 	}
 	
 	private void placePanels(Size fieldSize) {
@@ -396,6 +404,7 @@ public class Window extends JFrame {
 		squadTablePanel.removeAll();
 		
 		menu.setRemovingSuccess();
+		statusLabel.setText("");
 		redraw();
 	} 
 
