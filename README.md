@@ -11,5 +11,5 @@
     lib/<*your platform*>/libnativewindow_<*your window system*>.<*ext*>  
     as dependencies
 
-Note: tested in Linux Mint 20 and Windows 10 only  
+Note: tested on Linux Mint 20 and Windows 10 only  
 Note: to avoid issues with JogAmp on Linux recommend using jdk-8 and JogAmp version `v2.3.1`
