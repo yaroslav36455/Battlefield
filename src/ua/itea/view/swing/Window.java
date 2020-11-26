@@ -6,21 +6,24 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
@@ -165,31 +168,30 @@ public class Window extends JFrame {
 	}
 
 	private void setKeyListeners() {
-		addKeyListener(new KeyListener() {
-			
+		JRootPane pane = getRootPane();
+		InputMap inputMap = pane.getInputMap();
+		ActionMap actionMap = pane.getActionMap();
+		
+		inputMap.put(KeyStroke.getKeyStroke("SPACE"), "iterate");
+		actionMap.put("iterate", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void keyTyped(KeyEvent e) {
-				/* empty */
+			public void actionPerformed(ActionEvent e) {
+				iterate();
 			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				/* empty */
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (engine != null && tableManager != null
-						&& e.getKeyCode() == KeyEvent.VK_SPACE) {
-					engine.iterate();
-					tableManager.update();
-					
-					statusLabel.setText(getStatusLabelText());
-					
-					redraw();
-				}
-			} 
 		});
+	}
+	
+	private void iterate() {
+		if (engine != null && tableManager != null) {
+			engine.iterate();
+			tableManager.update();
+			
+			statusLabel.setText(getStatusLabelText());
+	
+			redraw();
+		}
 	}
 	
 	private String getStatusLabelText() {
