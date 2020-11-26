@@ -3,7 +3,6 @@ package ua.itea.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class Team extends Formation implements Iterable<Team.Squad> {

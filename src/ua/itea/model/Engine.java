@@ -33,10 +33,6 @@ public class Engine {
 		nearbyPositions = new NearbyPositions();
 	}
 	
-	public boolean isOver() {
-		return state.numberOfTeams() < 2;
-	}
-	
 	public void iterate() {
 		Field<Cell> field = state.getField();
 		boolean iterated = false;
@@ -157,27 +153,6 @@ public class Engine {
 		Team otherUnitTeam = otherUnit.getSquad().getTeam();
 		
 		return thisUnitTeam.getId() != otherUnitTeam.getId();
-	}
-	
-	private int getPriority(Unit opponent, CardinalPoints direction) {
-		CardinalPoints opponentDirection = opponent.getPlacement().getDirection();
-		int priority = 0;
-		
-		if (opponentDirection == direction.oposite()) {
-			
-			/* Face to face */
-			priority = 1;
-		} else if (opponentDirection == direction) {
-			
-			/* Face to back */
-			priority = 3;
-		} else {
-			
-			/* Face to side */
-			priority = 2;
-		}
-		
-		return priority;
 	}
 	
 	private class IsDestination implements Predicate<Position> {

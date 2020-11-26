@@ -1,7 +1,6 @@
 package ua.itea.model;
 
 import java.awt.Color;
-import java.util.Objects;
 
 public abstract class Formation {
 	private IdGenerator idGenerator;

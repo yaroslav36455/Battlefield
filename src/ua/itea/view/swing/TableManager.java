@@ -133,8 +133,7 @@ public class TableManager {
 	}
 	
 	private class TeamListSelectionListener implements ListSelectionListener {
-
-		private IntegerSelector value = new IntegerSelector();
+		private boolean isSelected;
 		
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
@@ -158,18 +157,16 @@ public class TableManager {
 		}
 		
 		private void unselect() {
-			if (value.isSelected()) {
-//				System.out.println("selected: " + value);
+			if (isSelected) {
 				teamRowUnselection.run();
 			}
-			value.unselect();
-//			System.out.println("selected: " + value);
+			isSelected = false;
 			squadRowUnselection.run();
 		}
 		
 		private void select(int index) {
 			teamRowSelection.run();
-			value.select(index);
+			isSelected = true;
 			
 			if (squads.get(index).isSelectedOrdinaryRow()) {
 				squadRowSelection.run();
@@ -184,7 +181,7 @@ public class TableManager {
 		private FormationTable table;
 		private Runner selectionListener;
 		private Runner unselectionListener;
-		private IntegerSelector value;
+		private boolean isSelected;
 		
 		public SquadListSelectionListener(FormationTable table,
 										  Runner selectionListener,
@@ -192,7 +189,6 @@ public class TableManager {
 			this.table = table;
 			this.selectionListener = selectionListener;
 			this.unselectionListener = unselectionListener;
-			value = new IntegerSelector();
 		}
 		
 		@Override
@@ -217,16 +213,16 @@ public class TableManager {
 		}
 		
 		private void unselect() {
-			if (value.isSelected()) {
+			if (isSelected) {
 				unselectionListener.run();
 			}
-			value.unselect();
+			isSelected = false;
 		}
 		
 		private void select(int index) {
 			if (!table.isTotalRow(index)) {
 				selectionListener.run();
-				value.select(index);
+				isSelected = true;
 			}
 		}
 	}

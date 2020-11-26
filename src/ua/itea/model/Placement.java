@@ -2,7 +2,6 @@ package ua.itea.model;
 
 import ua.itea.model.util.CardinalPoints;
 import ua.itea.model.util.MutablePosition;
-import ua.itea.model.util.Position;
 
 public class Placement {
 	private MutablePosition position;
