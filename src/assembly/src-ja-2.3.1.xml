@@ -1,0 +1,123 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+  
+  <id>${id}</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <dependencySets>
+    <dependencySet>
+      <excludes>
+        <!-- native dependencies begin -->
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-linux-amd64:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-linux-amd64:${jogamp.version}</exclude>
+
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-linux-i586:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-linux-i586:${jogamp.version}</exclude>
+
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-macosx-universal:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-macosx-universal:${jogamp.version}</exclude>
+
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-solaris-amd64:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-solaris-amd64:${jogamp.version}</exclude>
+
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-solaris-i586:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-solaris-i586:${jogamp.version}</exclude>
+
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-windows-amd64:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-windows-amd64:${jogamp.version}</exclude>
+        
+        <exclude>org.jogamp.gluegen:gluegen-rt:jar:natives-windows-i586:${jogamp.version}</exclude>
+        <exclude>org.jogamp.jogl:jogl-all:jar:natives-windows-i586:${jogamp.version}</exclude>
+        <!-- native dependencies end -->
+      </excludes>
+      <outputDirectory>/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <!-- native dependencies begin -->
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-linux-amd64:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-linux-amd64:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/linux-amd64</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-linux-i586:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-linux-i586:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/linux-i586/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-macosx-universal:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-macosx-universal:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/macosx-universal/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-solaris-amd64:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-solaris-amd64:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/solaris-amd64/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-solaris-i586:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-solaris-i586:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/solaris-i586/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-windows-amd64:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-windows-amd64:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/windows-amd64/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.jogamp.gluegen:gluegen-rt:jar:natives-windows-i586:${jogamp.version}</include>
+        <include>org.jogamp.jogl:jogl-all:jar:natives-windows-i586:${jogamp.version}</include>
+      </includes>
+      <outputDirectory>/natives/windows-i586/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+    <!-- native dependencies end -->
+
+  </dependencySets>
+</assembly>
